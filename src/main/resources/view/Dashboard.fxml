@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.andali.schoolreports.controller.DashboardController">
+   <top>
+      <HBox alignment="CENTER" prefHeight="61.0" prefWidth="600.0" style="-fx-background-color: #488998;" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="titleLabel" text="Title" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="termLabel" text="Term" textFill="WHITE">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+   </top>
+   <center>
+      <GridPane alignment="CENTER" hgap="20.0" prefHeight="299.0" prefWidth="524.0" vgap="20.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="312.0" minWidth="10.0" prefWidth="273.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="319.0" minWidth="10.0" prefWidth="267.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Button fx:id="studentsBtn" mnemonicParsing="false" onAction="#loadStudentsScene" prefHeight="100.0" prefWidth="288.0" style="-fx-background-color: #A6DCFB; -fx-border-color: #235D66; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" text="Students" textFill="#235d66">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Button>
+            <Button fx:id="gradeBtn" mnemonicParsing="false" onAction="#loadMarksheetScene" prefHeight="100.0" prefWidth="289.0" style="-fx-background-color: #A6DCFB; -fx-border-color: #235D66; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" text="MarkSheets" textFill="#235d66" GridPane.columnIndex="1">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Button>
+            <Button fx:id="reportsBtn" mnemonicParsing="false" onAction="#loadReportsScene" prefHeight="100.0" prefWidth="289.0" style="-fx-background-color: #A6DCFB; -fx-border-color: #235D66; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" text="Reports" textFill="#235d66" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Button>
+            <Button fx:id="classesBtn" mnemonicParsing="false" onAction="#loadClassesScene" prefHeight="100.0" prefWidth="288.0" style="-fx-background-color: #A6DCFB; -fx-border-color: #235D66; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" text="Classes" textFill="#235d66" GridPane.rowIndex="1">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Button>
+            <Button fx:id="subjectsBtn" mnemonicParsing="false" onAction="#loadSubjectScene" prefHeight="99.0" prefWidth="289.0" style="-fx-background-color: #A6DCFB; -fx-border-color: #235D66; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" text="Subjects" textFill="#235d66" GridPane.rowIndex="2">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Button>
+            <Button fx:id="settingsBtn" mnemonicParsing="false" onAction="#loadSettingsScene" prefHeight="99.0" prefWidth="288.0" style="-fx-background-color: #A6DCFB; -fx-border-color: #235D66; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" text="Settings" textFill="#235d66" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Button>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </BorderPane.margin>
+      </GridPane>
+   </center>
+</BorderPane>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane minWidth="800.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.andali.schoolreports.controller.StudentsController">
+   <top>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="0.0" prefWidth="800.0" />
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <VBox BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="57.0" prefWidth="814.0" spacing="10.0" style="-fx-background-color: #235D66;" VBox.vgrow="NEVER">
+               <children>
+                  <Button fx:id="previousSceneBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="39.0" text="&lt;-" />
+                  <TextField fx:id="searchField" promptText="Search student name" />
+                  <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#handleSearch" prefHeight="25.0" prefWidth="66.0" text="Search" />
+                  <ChoiceBox fx:id="classFilterChoiceBox" prefWidth="150.0" />
+                  <Region prefHeight="36.0" prefWidth="237.0" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="addStudentBtn" mnemonicParsing="false" onAction="#handleAddForm" prefHeight="25.0" prefWidth="96.0" text="Add Student" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
+            <TableView fx:id="studentTable" prefHeight="464.0" prefWidth="780.0" VBox.vgrow="ALWAYS">
+              <columns>
+                <TableColumn fx:id="idColumn" prefWidth="75.0" text="Student ID" />
+                <TableColumn fx:id="nameColumn" prefWidth="108.0" text="Name" />
+                  <TableColumn fx:id="classColumn" prefWidth="87.0" text="Class" />
+                  <TableColumn fx:id="linColumn" prefWidth="96.0" text="LIN" />
+                  <TableColumn fx:id="genderColumn" prefWidth="94.0" text="Gender" />
+                  <TableColumn fx:id="ageColumn" prefWidth="87.0" text="Age" />
+              </columns>
+            </TableView>
+            <Pagination fx:id="pagination" prefHeight="55.0" prefWidth="780.0" />
+         </children>
+      </VBox>
+   </center>
+   <bottom>
+      <HBox prefHeight="23.0" prefWidth="800.0" spacing="10.0" style="-fx-background-color: #235D66;" BorderPane.alignment="CENTER_LEFT">
+         <children>
+            <Label fx:id="statusLabel" text="Status:" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <ProgressBar fx:id="processProgress" prefWidth="200.0" progress="0.0" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </bottom>
+</BorderPane>

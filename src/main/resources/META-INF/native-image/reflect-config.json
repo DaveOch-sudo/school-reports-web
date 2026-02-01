@@ -1,0 +1,7 @@
+[
+  {
+    "name": "org.springframework.boot.SpringApplication",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true
+  }
+]

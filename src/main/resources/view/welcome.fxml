@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="556.0" prefWidth="651.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.andali.schoolreports.controller.WelcomeController">
+   <children>
+      <HBox alignment="CENTER" prefHeight="70.0" prefWidth="600.0">
+         <children>
+            <Label text="Welcome to School Reports" textAlignment="CENTER" textFill="#004c62">
+               <font>
+                  <Font name="Apple Braille Outline 6 Dot" size="32.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="172.0" prefWidth="600.0" style="-fx-background-color: #488998;" VBox.vgrow="ALWAYS">
+         <children>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="401.0" prefWidth="651.0">
+                     <children>
+                        <ImageView fitHeight="364.0" fitWidth="569.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/welcome.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="85.0" prefWidth="600.0" spacing="20.0" style="-fx-background-color: #004C62;">
+         <children>
+            <Button fx:id="welcomeBtn" mnemonicParsing="false" onAction="#loadDashboard" prefHeight="40.0" prefWidth="92.0" style="-fx-background-color: #488998;" text="Get Started" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+</VBox>
