@@ -14,4 +14,6 @@ public interface SchoolSubjectRepository extends JpaRepository<SchoolSubject, Lo
     List<SchoolSubject> findAllBySchoolClass(SchoolClass schoolClass);
 
     boolean existsByNameAndSchoolClass(String name, SchoolClass schoolClass);
+
+    long countBySchoolClass(SchoolClass schoolClass);
 }

@@ -7,28 +7,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class StudentMark {
+public class SubjectResult {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false)
-    private Student student;
-
-    @ManyToOne(optional = false)
-    private Marksheet marksheet;
+    private SchoolSubject schoolSubject;
 
     private int score;
-
-    // Derived at runtime via GradingScale — not persisted
-    @Transient
     private String grade;
-
-    // Derived at runtime via GradingScale — not persisted
-    @Transient
-    private String remark;
 }

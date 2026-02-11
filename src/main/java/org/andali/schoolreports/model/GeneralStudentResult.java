@@ -6,12 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class StudentMark {
+public class GeneralStudentResult {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,15 +23,13 @@ public class StudentMark {
     private Student student;
 
     @ManyToOne(optional = false)
-    private Marksheet marksheet;
+    private GeneralMarksheet generalMarksheet;
 
-    private int score;
+    private int totalMarks;
+    private double averageMarks;
+    private int position;
 
-    // Derived at runtime via GradingScale — not persisted
-    @Transient
-    private String grade;
-
-    // Derived at runtime via GradingScale — not persisted
-    @Transient
-    private String remark;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubjectResult> subjectResults = new ArrayList<>();
 }
+

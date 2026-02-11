@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.andali.schoolreports.controller.GeneralMarksheetLandingController">
+
+    <!-- TOP: Title + Summary -->
+    <top>
+        <VBox spacing="10" style="-fx-padding: 15;">
+            <Label text="General Marksheets"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+            <HBox spacing="15">
+                <VBox styleClass="summary-card">
+                    <Label text="Total Marksheets"/>
+                    <Label fx:id="totalMarksheetsLabel" text="0"/>
+                </VBox>
+
+                <VBox styleClass="summary-card">
+                    <Label text="Classes Covered"/>
+                    <Label fx:id="classesCoveredLabel" text="0"/>
+                </VBox>
+
+                <VBox styleClass="summary-card">
+                    <Label text="Exams Covered"/>
+                    <Label fx:id="examsCoveredLabel" text="0"/>
+                </VBox>
+
+                <VBox styleClass="summary-card">
+                    <Label text="Last Generated"/>
+                    <Label fx:id="lastGeneratedLabel" text="—"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- CENTER: Table of generated marksheets -->
+    <center>
+        <TableView fx:id="marksheetTable" prefHeight="500">
+            <columns>
+                <TableColumn text="Class" fx:id="classColumn"/>
+                <TableColumn text="Term" fx:id="termColumn"/>
+                <TableColumn text="Exam" fx:id="examColumn"/>
+                <TableColumn text="Students" fx:id="studentsCountColumn"/>
+                <TableColumn text="Subjects" fx:id="subjectsCountColumn"/>
+                <TableColumn text="Average" fx:id="averageColumn"/>
+                <TableColumn text="Status" fx:id="statusColumn"/>
+                <TableColumn text="Generated On" fx:id="generatedOnColumn"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <!-- BOTTOM: Actions -->
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_RIGHT"
+              style="-fx-padding: 10;">
+            <Button text="Generate New"
+                    fx:id="generateButton"
+                    style="-fx-font-weight: bold;"/>
+
+            <Button text="View"/>
+            <Button text="Print"/>
+            <Button text="Export PDF"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

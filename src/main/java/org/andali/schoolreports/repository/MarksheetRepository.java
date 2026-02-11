@@ -1,7 +1,9 @@
 package org.andali.schoolreports.repository;
 
 import org.andali.schoolreports.model.Marksheet;
+import org.andali.schoolreports.model.SchoolClass;
 import org.andali.schoolreports.model.enums.ExamType;
+import org.andali.schoolreports.model.enums.MarksheetStatus;
 import org.andali.schoolreports.model.enums.Term;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -45,4 +47,8 @@ public interface MarksheetRepository extends JpaRepository<Marksheet, Long> {
     WHERE m.id = :id
 """)
     Marksheet findMarksheetById(@Param("id") Long id);
+
+    List<Marksheet> findBySchoolClassAndTermAndExamType(SchoolClass schoolClass, Term term, ExamType examType);
+
+    List<Marksheet> findBySchoolClassAndTermAndExamTypeAndStatus(SchoolClass schoolClass, Term term, ExamType examType, MarksheetStatus status);
 }

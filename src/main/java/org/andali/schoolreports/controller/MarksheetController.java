@@ -79,6 +79,7 @@ public class MarksheetController {
     private final ObservableList<MarksheetRowDTO> tableData = FXCollections.observableArrayList();
     private Marksheet currentMarksheet; // the loaded/existing marksheet, null if new
     private  final ConfigurableApplicationContext applicationContext;
+
     public MarksheetController(StageManager stageManager,
                                SchoolClassService schoolClassService,
                                SchoolSubjectService schoolSubjectService,
@@ -280,9 +281,11 @@ public class MarksheetController {
             } else {
                 row.setScore(newScore);
                 // Re-grade this single row immediately
-                GradingScale scale = gradingScaleService.getGradingScaleById(gradingSystemChoice.getValue().getId());
-                if (scale != null) {
-                    resolveGradeForRow(row, scale);
+                if(gradingSystemChoice.getValue() != null){
+                    GradingScale scale = gradingScaleService.getGradingScaleById(gradingSystemChoice.getValue().getId());
+                    if (scale != null) {
+                        resolveGradeForRow(row, scale);
+                    }
                 }
             }
 
@@ -482,41 +485,45 @@ public class MarksheetController {
     // ── Build marksheet from current UI state ──────────────────────────
 
     private Marksheet buildMarksheetFromUI(GradingScale scale, MarksheetStatus status) {
-        SchoolClass selectedClass = schoolClassChoice.getValue();
-        SchoolSubject selectedSubject = schoolSubjectChoice.getValue();
-        Term selectedTerm = termChoice.getValue();
-        ExamType selectedExam = examChoice.getValue();
-
-        List<StudentMark> studentMarks = new ArrayList<>();
-        for (MarksheetRowDTO row : tableData) {
-            StudentMark sm = new StudentMark();
-            Student student = studentService.getStudentById(row.getStudentId());
-            sm.setStudent(student);
-            sm.setScore(row.getScore() != null ? row.getScore() : 0);
-            studentMarks.add(sm);
-        }
 
         Marksheet marksheet;
         if (currentMarksheet != null) {
-            // Update existing
             marksheet = currentMarksheet;
             marksheet.getStudentMarks().clear();
-            marksheet.getStudentMarks().addAll(studentMarks);
             marksheet.setUpdatedAt(LocalDateTime.now());
         } else {
-            // Brand new
             marksheet = new Marksheet();
             marksheet.setCreatedAt(LocalDateTime.now());
             marksheet.setUpdatedAt(LocalDateTime.now());
         }
 
-        marksheet.setName(selectedClass.getClassName() + "-" + selectedSubject.getName() + "-" + selectedTerm + "-" + selectedExam);
-        marksheet.setSchoolClass(selectedClass);
-        marksheet.setSchoolSubject(selectedSubject);
-        marksheet.setTerm(selectedTerm);
-        marksheet.setExamType(selectedExam);
-        marksheet.setGradingScale(scale);
+        List<StudentMark> studentMarks = new ArrayList<>();
+
+        for (MarksheetRowDTO row : tableData) {
+            StudentMark sm = new StudentMark();
+            Student student = studentService.getStudentById(row.getStudentId());
+
+            sm.setStudent(student);
+            sm.setScore(row.getScore() != null ? row.getScore() : 0);
+
+            sm.setMarksheet(marksheet);
+            studentMarks.add(sm);
+        }
+
         marksheet.setStudentMarks(studentMarks);
+
+        marksheet.setName(
+                schoolClassChoice.getValue().getClassName() + "-" +
+                        schoolSubjectChoice.getValue().getName() + "-" +
+                        termChoice.getValue() + "-" +
+                        examChoice.getValue()
+        );
+
+        marksheet.setSchoolClass(schoolClassChoice.getValue());
+        marksheet.setSchoolSubject(schoolSubjectChoice.getValue());
+        marksheet.setTerm(termChoice.getValue());
+        marksheet.setExamType(examChoice.getValue());
+        marksheet.setGradingScale(scale);
         marksheet.setStatus(status);
 
         return marksheet;
@@ -557,7 +564,7 @@ public class MarksheetController {
     public void handleNewGradingSystem(ActionEvent actionEvent) {
         try {
             // Load the dialog FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/marksheet/grading-system-dialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/dialogs/grading-system-dialog.fxml"));
 
             // Set the controller factory to use Spring's context
             loader.setControllerFactory(applicationContext::getBean);

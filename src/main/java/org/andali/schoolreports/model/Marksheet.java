@@ -105,10 +105,12 @@ public class Marksheet {
     // ── Convenience methods ─────────────────────────────────────────────
 
     public void addStudentMark(StudentMark mark) {
+        mark.setMarksheet(this);
         studentMarks.add(mark);
     }
 
     public void removeStudentMark(StudentMark mark) {
         studentMarks.remove(mark);
+        mark.setMarksheet(null);
     }
 }

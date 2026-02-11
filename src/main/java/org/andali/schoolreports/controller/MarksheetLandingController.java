@@ -1,6 +1,8 @@
 package org.andali.schoolreports.controller;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -28,7 +30,6 @@ import org.springframework.stereotype.Controller;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +82,10 @@ public class MarksheetLandingController implements Initializable {
     private final ConfigurableApplicationContext applicationContext;
     private List<MarksheetsLandingDto> dtos = new ArrayList<>();
 
+    // ── ADDED: master observable list + filtered list for filtering ──────
+    private final ObservableList<MarksheetsLandingDto> masterList = FXCollections.observableArrayList();
+    private FilteredList<MarksheetsLandingDto> filteredList;
+
     public MarksheetLandingController(StageManager stageManager, MarksheetService marksheetService, SchoolClassService schoolClassService, SchoolSubjectService schoolSubjectService, ConfigurableApplicationContext applicationContext) {
         this.stageManager = stageManager;
         this.marksheetService = marksheetService;
@@ -94,7 +99,12 @@ public class MarksheetLandingController implements Initializable {
         // initialize the marksheet list
         dtos.clear();
         dtos.addAll(marksheetService.allMarksheetsToDto());
-        marksheetListTable.setItems(FXCollections.observableList(dtos));
+
+        // ── CHANGED: feed dtos into masterList, wrap in FilteredList, bind to table ──
+        masterList.clear();
+        masterList.addAll(dtos);
+        filteredList = new FilteredList<>(masterList, p -> true);
+        marksheetListTable.setItems(filteredList);
 
         // populate the choice boxes
         // school class
@@ -155,7 +165,7 @@ public class MarksheetLandingController implements Initializable {
         int firstYear = LocalDate.now().getYear() - 5;
         for(int i = 1; i <=10; i++){
             yearChoice.getItems().add(firstYear);
-             firstYear ++;
+            firstYear ++;
         }
         // set the table columns
         subjectColumn.setCellValueFactory(new PropertyValueFactory<>("schoolSubject"));
@@ -164,22 +174,22 @@ public class MarksheetLandingController implements Initializable {
         examTypeColumn.setCellValueFactory(new PropertyValueFactory<>("examType"));
         marksheetStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
         lastUpdateColumn.setCellValueFactory(new PropertyValueFactory<>("lastUpdated"));
-        
+
         lastUpdateColumn.setCellFactory(col -> new TableCell<MarksheetsLandingDto, LocalDateTime>() {
             @Override
             protected void updateItem(LocalDateTime dateTime, boolean empty) {
                 super.updateItem(dateTime, empty);
-                
+
                 if (empty || dateTime == null) {
                     setText(null);
                     return;
                 }
-                
+
                 setText(formatRelativeTime(dateTime));
                 setStyle("-fx-text-fill: #777;");
             }
         });
-        
+
         actionColumn.setCellFactory(col -> new TableCell<MarksheetsLandingDto, Void>() {
 
             private final Button actionBtn = new Button();
@@ -224,12 +234,15 @@ public class MarksheetLandingController implements Initializable {
         });
 
 
-        // add change listener to year
-        yearChoice.selectionModelProperty().addListener((observable, oldValue, newValue) -> {
+        // ── REPLACED: the empty year listener is now all five filter listeners ───
+        schoolClassChoice.valueProperty().addListener((obs, o, n) -> applyFilter());
+        schoolSubjectChoice.valueProperty().addListener((obs, o, n) -> applyFilter());
+        examTypeChoice.valueProperty().addListener((obs, o, n) -> applyFilter());
+        termChoice.valueProperty().addListener((obs, o, n) -> applyFilter());
+        yearChoice.valueProperty().addListener((obs, o, n) -> applyFilter());
 
-        });
-
-
+        // ── ADDED: context menu on the table ─────────────────────────────────────
+        setupContextMenu();
 
         newMarksheetBtn.setOnAction(event -> {
             try {
@@ -282,6 +295,95 @@ public class MarksheetLandingController implements Initializable {
 
         updateOverviewLabels();
     }
+
+    // ── ADDED: context menu setup ───────────────────────────────────────────────
+
+    private void setupContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem openItem = new MenuItem("Open");
+        MenuItem deleteItem = new MenuItem("Delete");
+
+        // Open does the same thing as the action column button
+        openItem.setOnAction(event -> {
+            MarksheetsLandingDto dto = marksheetListTable.getSelectionModel().getSelectedItem();
+            if (dto == null) return;
+            if (dto.getStatus() == MarksheetStatus.SUBMITTED) {
+                viewMarksheet(dto.getMarksheetId());
+            } else {
+                loadSelectedMarksheet(dto.getMarksheetId());
+            }
+        });
+
+        // Delete — confirms, deletes, then refreshes the table
+        deleteItem.setOnAction(event -> {
+            MarksheetsLandingDto dto = marksheetListTable.getSelectionModel().getSelectedItem();
+            if (dto == null) return;
+
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Delete Marksheet");
+            confirm.setHeaderText(null);
+            confirm.setContentText("Delete \"" + dto.getMarksheetName() + "\"? This cannot be undone.");
+
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                marksheetService.deleteMarksheetById(dto.getMarksheetId());
+                refreshData();
+                updateOverviewLabels();
+            }
+        });
+
+        contextMenu.getItems().addAll(openItem, deleteItem);
+        marksheetListTable.setContextMenu(contextMenu);
+
+        // Both disabled until a row is selected
+        openItem.setDisable(true);
+        deleteItem.setDisable(true);
+        marksheetListTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            boolean nothingSelected = (newVal == null);
+            openItem.setDisable(nothingSelected);
+            deleteItem.setDisable(nothingSelected);
+        });
+    }
+
+    // ── ADDED: refresh masterList + filteredList, then re-apply current filter ──
+
+    private void refreshData() {
+        masterList.clear();
+        masterList.addAll(marksheetService.allMarksheetsToDto());
+        applyFilter();
+        updateOverviewLabels();
+    }
+
+    // ── ADDED: reads current choice box values and sets the predicate ────────────
+
+    private void applyFilter() {
+        if (filteredList == null) return;
+
+        SchoolClass selectedClass   = schoolClassChoice.getValue();
+        SchoolSubject selectedSubject = schoolSubjectChoice.getValue();
+        ExamType selectedExam       = examTypeChoice.getValue();
+        Term selectedTerm           = termChoice.getValue();
+        Integer selectedYear        = yearChoice.getValue();
+
+        filteredList.setPredicate(dto -> {
+            if (selectedClass != null && !dto.getSchoolClass().getId().equals(selectedClass.getId()))
+                return false;
+            if (selectedSubject != null && !dto.getSchoolSubject().getId().equals(selectedSubject.getId()))
+                return false;
+            if (selectedExam != null && dto.getExamType() != selectedExam)
+                return false;
+            if (selectedTerm != null && dto.getTerm() != selectedTerm)
+                return false;
+            if (selectedYear != null && dto.getCreated() != null && dto.getCreated().getYear() != selectedYear)
+                return false;
+            return true;
+        });
+
+        updateOverviewLabels();
+    }
+
+    // ── everything below is exactly as you had it ──────────────────────────────
 
     private String formatRelativeTime(LocalDateTime dateTime) {
         LocalDateTime now  = LocalDateTime.now();
