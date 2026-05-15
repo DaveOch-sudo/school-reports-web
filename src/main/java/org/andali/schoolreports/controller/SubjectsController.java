@@ -118,7 +118,7 @@ public class SubjectsController implements Initializable {
         cancelBtn.setOnAction(event -> hideForm());
 
         // back button
-        backBtn.setOnAction(event -> stageManager.switchSchene("/view/Dashboard.fxml","Dashboard"));
+        backBtn.setOnAction(event -> stageManager.loadView("/view/Dashboard.fxml","Dashboard"));
     }
 
     private void reloadTable() {

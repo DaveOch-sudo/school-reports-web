@@ -23,6 +23,7 @@ import org.andali.schoolreports.model.enums.ExamType;
 import org.andali.schoolreports.model.enums.MarksheetStatus;
 import org.andali.schoolreports.model.enums.Term;
 import org.andali.schoolreports.service.*;
+import org.andali.schoolreports.utils.UnsavedChangesAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
 
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-public class MarksheetController {
+public class MarksheetController implements UnsavedChangesAware {
 
     private final StageManager stageManager;
     private final SchoolClassService schoolClassService;
@@ -79,6 +80,7 @@ public class MarksheetController {
     private final ObservableList<MarksheetRowDTO> tableData = FXCollections.observableArrayList();
     private Marksheet currentMarksheet; // the loaded/existing marksheet, null if new
     private  final ConfigurableApplicationContext applicationContext;
+    private boolean dirty = false;
 
     public MarksheetController(StageManager stageManager,
                                SchoolClassService schoolClassService,
@@ -132,6 +134,7 @@ public class MarksheetController {
             if (newVal != null && !tableData.isEmpty()) {
                 gradeAllRows(newVal);
                 marksheetTable.refresh();
+                markDirty();
                 updateSummary();
             }
         });
@@ -272,7 +275,7 @@ public class MarksheetController {
         scoreColumn.setOnEditCommit(event -> {
             MarksheetRowDTO row = event.getRowValue();
             Integer newScore = event.getNewValue();
-
+            markDirty();
             if (newScore == null) {
                 // User cleared the field — treat as no score yet
                 row.setScore(null);
@@ -377,6 +380,7 @@ public class MarksheetController {
         for (MarksheetRowDTO row : tableData) {
             if (row.getScore() != null) {
                 resolveGradeForRow(row, scale);
+                markDirty();
             }
         }
     }
@@ -449,7 +453,7 @@ public class MarksheetController {
         }
 
         currentMarksheet = marksheet;
-
+        dirty = false;
         showAlert("Save Draft", "Draft saved successfully.");
     }
 
@@ -478,7 +482,7 @@ public class MarksheetController {
             marksheetService.addNewMarksheet(marksheet);
         }
         currentMarksheet = marksheet;
-
+        dirty = false;
         showAlert("Submit", "Marksheet submitted successfully.");
     }
 
@@ -547,7 +551,7 @@ public class MarksheetController {
 
     @FXML
     public void previousScene(ActionEvent actionEvent) {
-        stageManager.switchSchene("/view/marksheet/marksheets.fxml", "Manage Marksheets");
+        stageManager.loadView("/view/marksheet/marksheets.fxml", "Manage Marksheets");
     }
 
     private void showAlert(String title, String message) {
@@ -595,7 +599,7 @@ public class MarksheetController {
 
                 // Auto-select the newly created grading scale
                 gradingSystemChoice.setValue(savedScale);
-
+                markDirty();
                 showAlert("Success", "Grading system created successfully!");
             }
 
@@ -603,5 +607,26 @@ public class MarksheetController {
             e.printStackTrace();
             showAlert("Error", "Failed to open grading system dialog: " + e.getMessage());
         }
+    }
+
+    @Override
+    public boolean hasUnsavedChanges() {
+        return dirty;
+    }
+
+    @Override
+    public String getUnsavedChangesMessage() {
+        return "Marksheet has to be saved as Draft or Submitted";
+    }
+
+    @Override
+    public void saveChanges() {
+        handleDrafting(null);
+    }
+
+    public  void markDirty(){
+        dirty = true;
+        String title = stageManager.getTitle();
+        stageManager.updateTitle("* "+title);
     }
 }

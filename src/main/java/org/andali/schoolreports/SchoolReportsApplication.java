@@ -18,6 +18,7 @@ public class SchoolReportsApplication {
         // Start Spring context
         context = SpringApplication.run(SchoolReportsApplication.class, args);
 
+
         // Launch JavaFX app
         Application.launch(JavaFxApplication.class, args);
     }

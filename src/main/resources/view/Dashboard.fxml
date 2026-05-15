@@ -5,10 +5,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.andali.schoolreports.controller.DashboardController">
+<BorderPane  xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.andali.schoolreports.controller.DashboardController">
    <top>
-      <HBox alignment="CENTER" prefHeight="61.0" prefWidth="600.0" style="-fx-background-color: #488998;" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER"  style="-fx-background-color: #488998;" BorderPane.alignment="CENTER">
          <children>
             <Label fx:id="titleLabel" text="Title" textFill="WHITE">
                <font>
@@ -27,7 +26,7 @@
       </HBox>
    </top>
    <center>
-      <GridPane alignment="CENTER" hgap="20.0" prefHeight="299.0" prefWidth="524.0" vgap="20.0" BorderPane.alignment="CENTER">
+      <GridPane  hgap="20.0" prefHeight="299.0" prefWidth="524.0" vgap="20.0" BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="312.0" minWidth="10.0" prefWidth="273.0" />
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="319.0" minWidth="10.0" prefWidth="267.0" />
@@ -74,4 +73,7 @@
          </BorderPane.margin>
       </GridPane>
    </center>
+   <left>
+      <VBox prefHeight="443.0" prefWidth="196.0" style="-fx-background-color: #A6DCFB;" BorderPane.alignment="CENTER" />
+   </left>
 </BorderPane>

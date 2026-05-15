@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:controller="org.andali.schoolreports.controller.MainController" xmlns:fx="http://java.sun.com/JSP/Page">
+
+    <top>
+        <fx:include source="/view/MenuBar.fxml"/>
+    </top>
+
+    <center>
+        <StackPane fx:id="contentPane"/>
+    </center>
+
+</BorderPane>

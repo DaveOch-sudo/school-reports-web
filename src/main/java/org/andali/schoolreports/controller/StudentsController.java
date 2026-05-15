@@ -113,7 +113,7 @@ public class StudentsController implements Initializable {
 
         // returning to the dashboard scene
         previousSceneBtn.setOnAction(event -> {
-           stageManager.switchSchene("/view/Dashboard.fxml", "Dashboard");
+           stageManager.loadView("/view/Dashboard.fxml", "Dashboard");
         });
 
         // Populate choice box

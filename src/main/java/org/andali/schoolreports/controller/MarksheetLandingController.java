@@ -3,6 +3,7 @@ package org.andali.schoolreports.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -276,7 +277,7 @@ public class MarksheetLandingController implements Initializable {
                     stageManager.setContextData("marksheet_term", controller.getSelectedTerm());
 
                     // You'll need to modify your marksheet form to accept these parameters
-                    stageManager.switchSchene("/view/marksheet/marksheetForm.fxml", "New Marksheet");
+                    stageManager.loadView("/view/marksheet/marksheetForm.fxml", "New Marksheet");
 
                 }
 
@@ -290,7 +291,7 @@ public class MarksheetLandingController implements Initializable {
         });
 
         backBtn.setOnAction(event -> {
-            stageManager.switchSchene("/view/Dashboard.fxml", "Dashboard");
+            stageManager.loadView("/view/Dashboard.fxml", "Dashboard");
         });
 
         updateOverviewLabels();
@@ -404,13 +405,13 @@ public class MarksheetLandingController implements Initializable {
     private void viewMarksheet(Long marksheetId) {
         stageManager.setContextData("marksheet_id", marksheetId);
         stageManager.setContextData("marksheet_status", MarksheetStatus.SUBMITTED);
-        stageManager.switchSchene("/view/marksheet/marksheetForm.fxml", "Marksheet");
+        stageManager.loadView("/view/marksheet/marksheetForm.fxml", "Marksheet");
     }
 
     private void loadSelectedMarksheet(Long marksheetId) {
         stageManager.setContextData("marksheet_id", marksheetId);
         stageManager.setContextData("marksheet_status", MarksheetStatus.DRAFT);
-        stageManager.switchSchene("/view/marksheet/marksheetForm.fxml", "Marksheet");
+        stageManager.loadView("/view/marksheet/marksheetForm.fxml", "Marksheet");
     }
 
     public void populateUI() {
@@ -426,5 +427,16 @@ public class MarksheetLandingController implements Initializable {
         submittedLabel.setText(String.valueOf(submitted));
     }
 
+    @FXML
+    public void handleClose(ActionEvent actionEvent) {
+    }
 
+    @FXML
+    public void handleViewAbout(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void handleLoadGeneralMarksheet() {
+        stageManager.loadView("/view/marksheet/general-marksheet-landing.fxml", "General Marksheets");
+    }
 }

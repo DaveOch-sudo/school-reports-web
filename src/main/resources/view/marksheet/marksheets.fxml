@@ -8,31 +8,36 @@
 
 <BorderPane prefHeight="562.0" prefWidth="901.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.andali.schoolreports.controller.MarksheetLandingController">
    <top>
-      <HBox alignment="CENTER_LEFT" prefHeight="65.0" prefWidth="670.0" spacing="10.0" style="-fx-border-color: AAAAAB; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
+      <VBox BorderPane.alignment="CENTER">
          <children>
-            <Label text="Class:" />
-            <ChoiceBox fx:id="schoolClassChoice" prefHeight="25.0" prefWidth="91.0" />
-            <Label text="Term:" />
-            <ChoiceBox fx:id="termChoice" prefHeight="25.0" prefWidth="107.0" />
-            <Label text="Exam:" />
-            <ChoiceBox fx:id="examTypeChoice" prefHeight="25.0" prefWidth="108.0" />
-            <Label text="Subject:" />
-            <ChoiceBox fx:id="schoolSubjectChoice" prefHeight="25.0" prefWidth="139.0" />
-            <Region prefHeight="64.0" prefWidth="36.0" HBox.hgrow="ALWAYS" />
-            <Button fx:id="newMarksheetBtn" mnemonicParsing="false" style="-fx-background-color: #1E88E5;" text="+ New Marksheet" textFill="WHITE">
-               <font>
-                  <Font name="System Bold" size="13.0" />
-               </font>
-            </Button>
-            <Button fx:id="backBtn" mnemonicParsing="false" style="-fx-background-color: red;" text="&lt;-" textFill="WHITE">
-               <font>
-                  <Font name="System Bold" size="13.0" />
-               </font></Button>
+            <HBox alignment="CENTER_LEFT" prefHeight="65.0" prefWidth="670.0" spacing="10.0" style="-fx-border-color: AAAAAB; -fx-border-width: 0 0 1 0;">
+               <children>
+                  <Label text="Class:" />
+                  <ChoiceBox fx:id="schoolClassChoice" prefHeight="25.0" prefWidth="91.0" />
+                  <Label text="Term:" />
+                  <ChoiceBox fx:id="termChoice" prefHeight="25.0" prefWidth="107.0" />
+                  <Label text="Exam:" />
+                  <ChoiceBox fx:id="examTypeChoice" prefHeight="25.0" prefWidth="108.0" />
+                  <Label text="Subject:" />
+                  <ChoiceBox fx:id="schoolSubjectChoice" prefHeight="25.0" prefWidth="139.0" />
+                  <Region prefHeight="64.0" prefWidth="36.0" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="newMarksheetBtn" mnemonicParsing="false" style="-fx-background-color: #1E88E5;" text="+ New Marksheet" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="backBtn" mnemonicParsing="false" style="-fx-background-color: red;" text="&lt;-" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </HBox>
          </children>
-         <padding>
-            <Insets left="10.0" right="10.0" />
-         </padding>
-      </HBox>
+      </VBox>
    </top>
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
@@ -46,7 +51,7 @@
                   </Label>
                   <Region prefHeight="49.0" prefWidth="132.0" HBox.hgrow="ALWAYS" />
                   <Label text="Year:" />
-                  <ChoiceBox prefWidth="150.0" fx:id="yearChoice"/>
+                  <ChoiceBox fx:id="yearChoice" prefWidth="150.0" />
                </children>
                <padding>
                   <Insets left="10.0" right="10.0" />

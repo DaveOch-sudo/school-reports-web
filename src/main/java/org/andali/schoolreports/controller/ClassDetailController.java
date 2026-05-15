@@ -105,7 +105,7 @@ public class ClassDetailController implements Initializable {
         subjectClassColumn.setCellValueFactory(new PropertyValueFactory<>("schoolClass"));
 
         backBtn.setOnAction(event -> {
-            stageManager.switchSchene("/view/classes.fxml", "Classes");
+            stageManager.loadView("/view/classes.fxml", "Classes");
         });
 
         addStudentBtn.setOnAction(event -> {

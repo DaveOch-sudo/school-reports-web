@@ -65,7 +65,7 @@ public class ClassesController implements Initializable {
                 System.out.println("Selected class: " + selected);
                 if (selected != null) {
                    ClassDetailController controller =
-                           stageManager.switchSchene(
+                           stageManager.loadView(
                                    "/view/classDetail.fxml",
                                    "Class Details");
 
@@ -100,7 +100,7 @@ public class ClassesController implements Initializable {
         });
 
         previousSceneBtn.setOnAction(event ->
-                stageManager.switchSchene("/view/Dashboard.fxml","Dashboard"));
+                stageManager.loadView("/view/Dashboard.fxml","Dashboard"));
     }
 
     public void reloadClasses(){

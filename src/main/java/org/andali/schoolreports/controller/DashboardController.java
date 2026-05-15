@@ -33,22 +33,22 @@ public class DashboardController {
     }
 
     public void loadStudentsScene() {
-        stageManager.switchSchene("/view/students.fxml",  "Manage Students");
+        stageManager.loadView("/view/students.fxml",  "Manage Students");
     }
 
     public void loadMarksheetScene() {
-        stageManager.switchSchene("/view/marksheet/marksheets.fxml",  "Manage Marksheets");
+        stageManager.loadView("/view/marksheet/marksheets.fxml",  "Manage Marksheets");
     }
 
     public void loadReportsScene() {
     }
 
     public void loadClassesScene() {
-        stageManager.switchSchene("/view/classes.fxml",  "Manage Classes");
+        stageManager.loadView("/view/classes.fxml",  "Manage Classes");
     }
 
     public void loadSubjectScene() {
-        stageManager.switchSchene("/view/subjects.fxml",  "Manage Subjects");
+        stageManager.loadView("/view/subjects.fxml",  "Manage Subjects");
     }
 
     public void loadSettingsScene() {
