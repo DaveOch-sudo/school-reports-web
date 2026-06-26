@@ -15,7 +15,7 @@ public class SchoolClass {
     private Long id;
 
     @Column(nullable = false)
-    private String className;
+    private String name;
 
     @ManyToOne(optional = false)
     private School school;
@@ -25,6 +25,6 @@ public class SchoolClass {
 
     @Override
     public String toString() {
-        return className;
+        return name;
     }
 }

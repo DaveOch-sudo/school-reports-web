@@ -1,6 +1,7 @@
 package org.andali.schoolreportsweb.repository;
 
 import org.andali.schoolreportsweb.model.GradingScale;
+import org.andali.schoolreportsweb.model.School;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +11,8 @@ import java.util.List;
 
 @Repository
 public interface GradingScaleRepository extends JpaRepository<GradingScale, Long> {
+
+    List<GradingScale> findAllBySchool(School school);
 
     @Query("""
         SELECT gs FROM GradingScale gs

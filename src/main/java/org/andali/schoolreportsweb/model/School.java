@@ -20,5 +20,14 @@ public class School {
 
     private String phone;
 
+    @Column(unique = true)
     private String email;
+
+    private String Emis_code;
+
+    private String motto;
+
+    private String logoUrl;
+
+    private String registrationNumber;
 }

@@ -3,6 +3,8 @@ package org.andali.schoolreportsweb.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"school_id", "label"}))
 @NoArgsConstructor
@@ -21,5 +23,9 @@ public class AcademicYear {
     @Column(nullable = false)
     private String label;
 
-    private boolean current;
+    private boolean isCurrent;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 }

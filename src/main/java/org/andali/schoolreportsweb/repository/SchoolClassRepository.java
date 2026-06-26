@@ -12,11 +12,7 @@ import java.util.Optional;
 public interface SchoolClassRepository extends JpaRepository<SchoolClass, Long> {
     SchoolClass findAllByClassName(String schoolClassName);
 
-    @Query("""
-        SELECT c FROM SchoolClass c
-        LEFT JOIN FETCH c.students
-        WHERE c.id = :id
-    """)
+    @Query("SELECT c FROM SchoolClass c WHERE c.id = :id")
     SchoolClass findByIdWithDetails(@Param("id") Long classId);
 
 

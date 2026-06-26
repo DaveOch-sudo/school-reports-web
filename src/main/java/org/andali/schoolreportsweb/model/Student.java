@@ -2,6 +2,7 @@ package org.andali.schoolreportsweb.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.andali.schoolreportsweb.model.enums.Gender;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -17,6 +18,8 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String admissionNumber;
+
     @Column(nullable = false)
     private String name;
 
@@ -27,7 +30,8 @@ public class Student {
 
     private LocalDate dob;
 
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Transient
     public int getAge() {
