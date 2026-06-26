@@ -4,7 +4,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <VBox prefHeight="438.0" prefWidth="892.0" spacing="10.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.andali.schoolreports.controller.GeneralMarksheetController">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="63.0" prefWidth="666.0" spacing="10.0" style="-fx-border-color: #aaaa; -fx-border-width: 0 0 1 0;" VBox.vgrow="NEVER">
@@ -15,7 +14,7 @@
             <ChoiceBox prefHeight="25.0" prefWidth="89.0" />
             <Label text="Exam Type:" />
             <ChoiceBox prefHeight="25.0" prefWidth="105.0" />
-            <Button mnemonicParsing="false" text="Generate General Marksheet" />
+            <Button mnemonicParsing="false" text="Create Reports" />
             <Region prefHeight="41.0" prefWidth="19.0" HBox.hgrow="ALWAYS" />
             <Button mnemonicParsing="false" text="Export PDF" />
             <Button mnemonicParsing="false" text="Print" />

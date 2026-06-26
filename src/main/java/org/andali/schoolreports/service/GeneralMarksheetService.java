@@ -1,6 +1,8 @@
 package org.andali.schoolreports.service;
 
 import jakarta.transaction.Transactional;
+import org.andali.schoolreports.dto.GeneralMarksheetDashboardDTO;
+import org.andali.schoolreports.dto.GeneralMarksheetSummaryDTO;
 import org.andali.schoolreports.model.*;
 import org.andali.schoolreports.model.enums.ExamType;
 import org.andali.schoolreports.model.enums.MarksheetStatus;
@@ -19,16 +21,12 @@ import java.util.stream.Collectors;
 @Service
 public class GeneralMarksheetService {
     private final GeneralMarksheetRepository generalMarksheetRepository;
-    private final GeneralStudentResultRepository generalStudentResultRepository;
-    private final SubjectResultRepository subjectResultRepository;
     private final MarksheetRepository marksheetRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
 
 
     public GeneralMarksheetService(GeneralMarksheetRepository generalMarksheetRepository, GeneralStudentResultRepository generalStudentResultRepository, SubjectResultRepository subjectResultRepository, MarksheetRepository marksheetRepository, SchoolSubjectRepository schoolSubjectRepository) {
         this.generalMarksheetRepository = generalMarksheetRepository;
-        this.generalStudentResultRepository = generalStudentResultRepository;
-        this.subjectResultRepository = subjectResultRepository;
         this.marksheetRepository = marksheetRepository;
         this.schoolSubjectRepository = schoolSubjectRepository;
     }
@@ -126,5 +124,13 @@ public class GeneralMarksheetService {
         results.forEach(gsr -> gsr.setGeneralMarksheet(generalMarksheet));
         generalMarksheet.setResults(results);
         generalMarksheetRepository.save(generalMarksheet);
+    }
+
+    public List<GeneralMarksheetSummaryDTO> getLandingRows() {
+        return generalMarksheetRepository.fetchLandingRows();
+    }
+
+    public GeneralMarksheetDashboardDTO getDashboardStats() {
+        return generalMarksheetRepository.fetchDashboardStats();
     }
 }

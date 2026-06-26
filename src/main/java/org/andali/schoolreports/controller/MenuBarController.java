@@ -6,10 +6,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 import org.andali.schoolreports.application.JavaFxApplication;
+import org.andali.schoolreports.config.StageManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class MenuBarController {
+    @Autowired
+    StageManager stageManager;
 
     @FXML
     public MenuItem saveItem;
@@ -62,18 +66,22 @@ public class MenuBarController {
 
     @FXML
     public void handleViewStudents(ActionEvent actionEvent) {
+        stageManager.loadView("/view/students.fxml", "Students");
     }
 
     @FXML
     public void handleViewSubjects(ActionEvent actionEvent) {
+        stageManager.loadView("/view/subjects.fxml", "Subjects");
     }
 
     @FXML
     public void handleMarksheetsView(ActionEvent actionEvent) {
+        stageManager.loadView("/view/marksheet/marksheets.fxml", "Subject Marksheets");
     }
 
     @FXML
     public void handleGeneralMarksheetsView(ActionEvent actionEvent) {
+        stageManager.loadView("/view/marksheet/general-marksheet-landing.fxml", "General Marksheets");
     }
 
     @FXML
