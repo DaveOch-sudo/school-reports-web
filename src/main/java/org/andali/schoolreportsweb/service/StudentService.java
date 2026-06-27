@@ -1,6 +1,8 @@
 package org.andali.schoolreportsweb.service;
 
 import jakarta.transaction.Transactional;
+import org.andali.schoolreportsweb.dto.StudentResponseDto;
+import org.andali.schoolreportsweb.mapper.StudentMapper;
 import org.andali.schoolreportsweb.model.SchoolClass;
 import org.andali.schoolreportsweb.model.Student;
 import org.andali.schoolreportsweb.repository.StudentRepository;
@@ -14,17 +16,31 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final SchoolClassService schoolClassService;
+    private final StudentMapper studentMapper;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository, SchoolClassService schoolClassService) {
+    public StudentService(StudentRepository studentRepository, SchoolClassService schoolClassService, StudentMapper studentMapper) {
         this.studentRepository = studentRepository;
         this.schoolClassService = schoolClassService;
+        this.studentMapper = studentMapper;
     }
 
 
-    public void AddStudent(Student student){
+    public Student createStudent(StudentResponseDto studentDto){
+        Student student = new Student(
+                studentDto.getId(),
+                studentDto.getAdmissionNumber(),
+                studentDto.getName(),
+                schoolClassService.getSchoolClassById(studentDto.getSchoolClassId()),
+                studentDto.getLin(),
+                studentDto.getDob(),
+                studentDto.getGender()
+        );
+
+
         studentRepository.save(student);
         System.out.println("Student added successfully");
+        return student;
     }
 
     public Student getStudentByNameAndClass(String name, SchoolClass schoolClass){
@@ -42,8 +58,13 @@ public class StudentService {
         return studentRepository.findBySchoolClass_Id(schoolClass.getId());
     }
 
-    public void deleteStudent(Student student){
-        studentRepository.delete(student);
+    public void deleteStudent(Long id){
+        Student student = studentRepository.findById(id).get();
+
+        // check if student exits in database before deleting
+        if (student != null) {
+            studentRepository.delete(student);
+        }
     }
 
     public List<Student> getAllStudents() {
@@ -55,15 +76,23 @@ public class StudentService {
     }
 
     @Transactional
-    public void updateStudent(Long id, Student editStudent) {
+    public Student updateStudent(Long id, StudentResponseDto editStudent) {
         Student student = studentRepository.findById(editStudent.getId()).get();
+
+        if (!studentRepository.findById(editStudent.getId()).isPresent()) {
+            System.out.println("Student "+editStudent.getId()+" not found!");
+            return null;
+        }
+
+        SchoolClass schoolClass = schoolClassService.getSchoolClassById(editStudent.getSchoolClassId());
          student.setName(editStudent.getName());
          student.setLin(editStudent.getLin());
          student.setDob(editStudent.getDob());
          student.setGender(editStudent.getGender());
-         student.setSchoolClass(editStudent.getSchoolClass());
+         student.setSchoolClass(schoolClass);
 
          studentRepository.save(student);
+        return student;
     }
 
     public Student getStudentById(Long studentId) {

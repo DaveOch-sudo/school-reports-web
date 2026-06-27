@@ -26,6 +26,7 @@ public class Student {
     @ManyToOne(optional = false)
     private SchoolClass schoolClass;
 
+    @Column(unique = true)
     private String lin;
 
     private LocalDate dob;
