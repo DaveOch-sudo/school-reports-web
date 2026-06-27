@@ -1,48 +1,37 @@
 package org.andali.schoolreportsweb.service;
 
+import lombok.RequiredArgsConstructor;
 import org.andali.schoolreportsweb.model.SchoolClass;
 import org.andali.schoolreportsweb.model.SchoolSubject;
 import org.andali.schoolreportsweb.repository.SchoolSubjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SchoolSubjectService {
+
     private final SchoolSubjectRepository repository;
 
-    @Autowired
-    public SchoolSubjectService(SchoolSubjectRepository repository) {
-        this.repository = repository;
-    }
-
-    public SchoolSubject findAllBySubjectName(String subjectName) {
-        return repository.findAllByName(subjectName);
-    }
-
-    public void addSchoolSubject(SchoolSubject schoolSubject) {
-        repository.save(schoolSubject);
-    }
-
-    public void deleteSchoolSubject(SchoolSubject schoolSubject) {
-        repository.delete(schoolSubject);
-    }
-
-    public List<SchoolSubject> getAllBySchoolClass(SchoolClass selectedClass) {
-        return repository.findAllBySchoolClass(selectedClass);
-    }
-
     public List<SchoolSubject> getAllSubjects() {
-        return  repository.findAll();
+        return repository.findAll();
     }
 
-    public void updateSubject(Long id, SchoolSubject editSubject) {
-        SchoolSubject subject = repository.findById(id).get();
+    public List<SchoolSubject> getAllBySchoolClass(SchoolClass schoolClass) {
+        return repository.findAllBySchoolClass(schoolClass);
+    }
 
-        if (editSubject != null) {
-            subject = editSubject;
-            repository.save(subject);
-        }
+    public SchoolSubject getById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Subject not found: " + id));
+    }
+
+    public SchoolSubject save(SchoolSubject subject) {
+        return repository.save(subject);
+    }
+
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 }

@@ -1,6 +1,5 @@
 package org.andali.schoolreportsweb.service;
 
-import org.andali.schoolreportsweb.dto.MarksheetsLandingDto;
 import org.andali.schoolreportsweb.model.GradeStep;
 import org.andali.schoolreportsweb.model.GradingScale;
 import org.andali.schoolreportsweb.model.Marksheet;
@@ -112,29 +111,6 @@ public class MarksheetService {
                 .filter(step -> score >= step.getMinScore() && score <= step.getMaxScore())
                 .findFirst()
                 .orElse(null);
-    }
-
-    // ── DTO mapping ─────────────────────────────────────────────────────
-
-    public List<MarksheetsLandingDto> allMarksheetsToDto() {
-        List<Marksheet> marksheets = marksheetRepository.findAll();
-        List<MarksheetsLandingDto> dtos = new ArrayList<>();
-
-        for (Marksheet marksheet : marksheets) {
-            MarksheetsLandingDto dto = new MarksheetsLandingDto();
-            dto.setMarksheetId(marksheet.getId());
-            dto.setMarksheetName(marksheet.getName());
-            dto.setExamType(marksheet.getExamType());
-            dto.setTerm(marksheet.getTerm());
-            dto.setLastUpdated(marksheet.getUpdatedAt());
-            dto.setCreated(marksheet.getCreatedAt());
-            dto.setStatus(marksheet.getStatus());
-            dto.setSchoolClass(marksheet.getSchoolClass());
-            dto.setSchoolSubject(marksheet.getSchoolSubject());
-            dtos.add(dto);
-        }
-
-        return dtos;
     }
 
     public Marksheet findByClassAndSubjectAndTermAndExam(Long id, Long id1, Term selectedTerm, ExamType selectedExam) {

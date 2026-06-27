@@ -159,7 +159,7 @@ public class SubjectsSeederService {
     }
 
     private SchoolClass getClassByName(String name) {
-        return schoolClassRepository.findByClassName(name).orElse(null);
+        return schoolClassRepository.findByName(name).orElse(null);
     }
 
     private void add(String name, String description, SchoolClass schoolClass) {
