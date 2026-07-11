@@ -1,7 +1,7 @@
 package org.andali.schoolreportsweb.school;
 
 import lombok.RequiredArgsConstructor;
-import org.andali.schoolreportsweb.school.SchoolService;
+import org.andali.schoolreportsweb.school.dto.SchoolRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

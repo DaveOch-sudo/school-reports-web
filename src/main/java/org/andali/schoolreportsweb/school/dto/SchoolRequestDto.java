@@ -1,4 +1,4 @@
-package org.andali.schoolreportsweb.school;
+package org.andali.schoolreportsweb.school.dto;
 
 import lombok.Builder;
 import lombok.Data;
