@@ -1,0 +1,43 @@
+package org.andali.schoolreportsweb.student;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.andali.schoolreportsweb.schoolclass.SchoolClass;
+import org.andali.schoolreportsweb.enums.Gender;
+
+import java.time.LocalDate;
+import java.time.Period;
+
+@Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"school_class_id", "lin"}))
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class Student {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String admissionNumber;
+
+    @Column(nullable = false)
+    private String name;
+
+    @ManyToOne(optional = false)
+    private SchoolClass schoolClass;
+
+    @Column(unique = true)
+    private String lin;
+
+    private LocalDate dob;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Transient
+    public int getAge() {
+        if (dob == null) return -1;
+        return Period.between(dob, LocalDate.now()).getYears();
+    }
+}

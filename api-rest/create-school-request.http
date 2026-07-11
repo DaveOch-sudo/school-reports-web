@@ -1,0 +1,11 @@
+### GET all schools
+POST http://localhost:8080/api/v1/schools
+Content-Type: application/json
+
+{
+  "name" : "Quality Junior School",
+  "email" : "qualityngg@gmail.com",
+  "address" : "Nagongera-Tororo Rd",
+  "phone" : "0708982154"
+}
+###
