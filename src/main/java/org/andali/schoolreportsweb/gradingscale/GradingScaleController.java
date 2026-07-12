@@ -20,8 +20,10 @@ public class GradingScaleController {
 
     @GetMapping("/school/{schoolId}")
     public ResponseEntity<List<GradingScaleDto>> getBySchool(@PathVariable Long schoolId) {
-        return ResponseEntity.ok(gradingScaleService.getAllBySchool(schoolService.getById(schoolId))
-                .stream().map(gradingScaleMapper::toDto).toList());
+        return ResponseEntity.ok(gradingScaleService.getAllBySchoolId(schoolId)
+                .stream()
+                .map(gradingScaleMapper::toDto)
+                .toList());
     }
 
     @GetMapping("/{id}")
@@ -33,7 +35,7 @@ public class GradingScaleController {
     public ResponseEntity<GradingScaleDto> create(@RequestBody GradingScaleDto dto) {
         GradingScale scale = new GradingScale();
         scale.setName(dto.getName());
-        scale.setSchool(schoolService.getById(dto.getSchoolId()));
+        scale.setSchool(schoolService.getSchoolById(dto.getSchoolId()));
         if (dto.getSteps() != null) {
             dto.getSteps().forEach(s -> {
                 GradeStep step = new GradeStep();

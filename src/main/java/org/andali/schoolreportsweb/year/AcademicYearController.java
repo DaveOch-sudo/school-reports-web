@@ -20,14 +20,14 @@ public class AcademicYearController {
 
     @GetMapping("/school/{schoolId}")
     public ResponseEntity<List<AcademicYearDto>> getBySchool(@PathVariable Long schoolId) {
-        return ResponseEntity.ok(academicYearService.getAllBySchool(schoolService.getById(schoolId))
+        return ResponseEntity.ok(academicYearService.getAllBySchool(schoolService.getSchoolById(schoolId))
                 .stream().map(academicYearMapper::toDto).toList());
     }
 
     @GetMapping("/school/{schoolId}/current")
     public ResponseEntity<AcademicYearDto> getCurrent(@PathVariable Long schoolId) {
         return ResponseEntity.ok(academicYearMapper.toDto(
-                academicYearService.getCurrentYear(schoolService.getById(schoolId))));
+                academicYearService.getCurrentYear(schoolService.getSchoolById(schoolId))));
     }
 
     @GetMapping("/{id}")
@@ -38,7 +38,7 @@ public class AcademicYearController {
     @PostMapping
     public ResponseEntity<AcademicYearDto> create(@RequestBody AcademicYearDto dto) {
         AcademicYear year = new AcademicYear();
-        year.setSchool(schoolService.getById(dto.getSchoolId()));
+        year.setSchool(schoolService.getSchoolById(dto.getSchoolId()));
         year.setLabel(dto.getLabel());
         year.setCurrent(dto.isCurrent());
         year.setStartDate(dto.getStartDate());
@@ -50,7 +50,7 @@ public class AcademicYearController {
     @PatchMapping("/{id}/set-current")
     public ResponseEntity<AcademicYearDto> setCurrent(@PathVariable Long id, @RequestParam Long schoolId) {
         return ResponseEntity.ok(academicYearMapper.toDto(
-                academicYearService.setAsCurrent(id, schoolService.getById(schoolId))));
+                academicYearService.setAsCurrent(id, schoolService.getSchoolById(schoolId))));
     }
 
     @DeleteMapping("/{id}")

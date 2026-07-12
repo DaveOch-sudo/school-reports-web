@@ -25,4 +25,6 @@ public interface GradingScaleRepository extends JpaRepository<GradingScale, Long
     LEFT JOIN FETCH gs.steps
 """)
     List<GradingScale> findAllWithSteps();
+
+    List<GradingScale> findAllBySchoolId(Long schoolId);
 }

@@ -1,0 +1,4 @@
+### Delete a class
+DELETE http://localhost:8080/api/v1/classes/1
+
+###

@@ -1,6 +1,7 @@
-package org.andali.schoolreportsweb.subject;
+package org.andali.schoolreportsweb.util;
 
 import lombok.RequiredArgsConstructor;
+import org.andali.schoolreportsweb.subject.SubjectsSeederService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

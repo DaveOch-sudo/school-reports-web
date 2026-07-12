@@ -20,7 +20,7 @@ public class ReportTemplateController {
 
     @GetMapping("/school/{schoolId}")
     public ResponseEntity<List<ReportTemplateDto>> getBySchool(@PathVariable Long schoolId) {
-        return ResponseEntity.ok(reportTemplateService.getAllBySchool(schoolService.getById(schoolId))
+        return ResponseEntity.ok(reportTemplateService.getAllBySchool(schoolService.getSchoolById(schoolId))
                 .stream().map(reportTemplateMapper::toDto).toList());
     }
 
@@ -32,7 +32,7 @@ public class ReportTemplateController {
     @PostMapping
     public ResponseEntity<ReportTemplateDto> create(@RequestBody ReportTemplateDto dto) {
         ReportTemplate t = new ReportTemplate();
-        t.setSchool(schoolService.getById(dto.getSchoolId()));
+        t.setSchool(schoolService.getSchoolById(dto.getSchoolId()));
         t.setName(dto.getName());
         t.setLogoUrl(dto.getLogoUrl());
         t.setSchoolNameOverride(dto.getSchoolNameOverride());
@@ -70,7 +70,7 @@ public class ReportTemplateController {
     @PatchMapping("/{id}/set-active")
     public ResponseEntity<ReportTemplateDto> setActive(@PathVariable Long id, @RequestParam Long schoolId) {
         return ResponseEntity.ok(reportTemplateMapper.toDto(
-                reportTemplateService.setAsActive(id, schoolService.getById(schoolId))));
+                reportTemplateService.setAsActive(id, schoolService.getSchoolById(schoolId))));
     }
 
     @DeleteMapping("/{id}")

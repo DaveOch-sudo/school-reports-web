@@ -2,8 +2,12 @@ package org.andali.schoolreportsweb.school;
 
 import lombok.RequiredArgsConstructor;
 import org.andali.schoolreportsweb.school.dto.SchoolRequestDto;
+import org.andali.schoolreportsweb.school.SchoolMapper;
+import org.andali.schoolreportsweb.school.dto.SchoolResponseDto;
+import org.andali.schoolreportsweb.school.dto.SchoolUpdateRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,36 +19,31 @@ import java.util.List;
 public class SchoolController {
 
     private final SchoolService schoolService;
-    private final SchoolMapper schoolMapper;
-
+   
     @GetMapping
-    public ResponseEntity<List<SchoolRequestDto>> getAll() {
-        return ResponseEntity.ok(schoolService.getAll().stream().map(schoolMapper::toDto).toList());
+    public ResponseEntity<List<SchoolResponseDto>> getAll() {
+        return ResponseEntity.ok(schoolService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SchoolRequestDto> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(schoolMapper.toDto(schoolService.getById(id)));
+    public ResponseEntity<SchoolResponseDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(schoolService.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<SchoolRequestDto> create(@RequestBody SchoolRequestDto dto) {
+    public ResponseEntity<SchoolResponseDto> create(@RequestBody SchoolRequestDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(schoolMapper.toDto(schoolService.create(schoolMapper.toEntity(dto))));
+                .body(schoolService.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SchoolRequestDto> update(@PathVariable Long id, @RequestBody SchoolRequestDto dto) {
+    public ResponseEntity<SchoolResponseDto> update(@PathVariable Long id,
+                                                    @Validated @RequestBody SchoolUpdateRequestDto dto) {
         var school = schoolService.getById(id);
-        school.setName(dto.getName());
-        school.setAddress(dto.getAddress());
-        school.setPhone(dto.getPhone());
-        school.setEmail(dto.getEmail());
-//        school.setEmis_code(dto.getEmisCode());
-//        school.setMotto(dto.getMotto());
-//        school.setLogoUrl(dto.getLogoUrl());
-//        school.setRegistrationNumber(dto.getRegistrationNumber());
-        return ResponseEntity.ok(schoolMapper.toDto(schoolService.update(school)));
+        if (school == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(schoolService.update( id, dto));
     }
 
     @DeleteMapping("/{id}")

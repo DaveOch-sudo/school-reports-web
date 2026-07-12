@@ -25,7 +25,8 @@ public class School {
 
     private String email;
 
-    private String Emis_code;
+    @Column(name = "emis_code")
+    private String emisCode;
 
     private String motto;
 

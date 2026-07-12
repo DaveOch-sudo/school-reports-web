@@ -1,0 +1,10 @@
+### Create a new class
+PUT http://localhost:8080/api/v1/classes/1
+content-type: application/json
+
+{
+  "name" : "P1 West",
+  "schoolId" : 1,
+  "defaultGradingScaleId" : 2
+}
+###

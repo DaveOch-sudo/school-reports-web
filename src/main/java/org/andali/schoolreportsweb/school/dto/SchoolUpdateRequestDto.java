@@ -8,7 +8,7 @@ import lombok.Data;
 @Builder
 public class SchoolUpdateRequestDto {
 
-    private Long id;
+    private String id;
 
     private String name;
 
@@ -18,7 +18,7 @@ public class SchoolUpdateRequestDto {
 
     private String email;
 
-    private String Emis_code;
+    private String emisCode;
 
     private String motto;
 

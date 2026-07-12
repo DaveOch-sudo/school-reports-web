@@ -1,0 +1,16 @@
+### GET request to example server
+PUT http://localhost:8080/api/v1/schools/1
+content-type: application/json
+
+{
+  "id": "1",
+  "name": "Quality Junior School",
+  "email": "qualityngg@gmail.com",
+  "address": "Nagongera-Tororo Rd",
+  "phone": "0708982154",
+  "motto": "God is able",
+  "emisCode": "EM2093",
+  "logoUrl": "www.logos.qjn-1",
+  "registrationNumber": "UNEB12382"
+}
+###

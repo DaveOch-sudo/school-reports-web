@@ -20,8 +20,8 @@ public class GradingScaleService {
         return gradingScaleRepository.findGradingScaleById(id);
     }
 
-    public List<GradingScale> getAllBySchool(School school) {
-        return gradingScaleRepository.findAllBySchool(school);
+    public List<GradingScale> getAllBySchoolId(Long schoolId) {
+        return gradingScaleRepository.findAllBySchoolId(schoolId);
     }
 
     public GradingScale addStep(Long scaleId, GradeStep step) {

@@ -22,7 +22,7 @@ public class UserController {
 
     @GetMapping("/school/{schoolId}")
     public ResponseEntity<List<UserDto>> getBySchool(@PathVariable Long schoolId) {
-        return ResponseEntity.ok(userService.getAllBySchool(schoolService.getById(schoolId))
+        return ResponseEntity.ok(userService.getAllBySchool(schoolService.getSchoolById(schoolId))
                 .stream().map(userMapper::toDto).toList());
     }
 
@@ -39,7 +39,7 @@ public class UserController {
         user.setPhone(dto.getPhone());
         user.setRole(dto.getRole());
         user.setPasswordHash(""); // placeholder — will be set during auth registration
-        if (dto.getSchoolId() != null) user.setSchool(schoolService.getById(dto.getSchoolId()));
+        if (dto.getSchoolId() != null) user.setSchool(schoolService.getSchoolById(dto.getSchoolId()));
         if (dto.getAssignedClassId() != null)
             user.setAssignedClass(schoolClassService.getSchoolClassById(dto.getAssignedClassId()));
         return ResponseEntity.status(HttpStatus.CREATED)
