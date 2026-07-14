@@ -1,4 +1,4 @@
-package org.andali.schoolreportsweb.marksheet;
+package org.andali.schoolreportsweb.marksheet.exception;
 
 import lombok.Getter;
 

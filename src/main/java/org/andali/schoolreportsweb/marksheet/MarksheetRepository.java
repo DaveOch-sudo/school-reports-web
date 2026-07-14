@@ -19,6 +19,8 @@ public interface MarksheetRepository extends JpaRepository<Marksheet, Long> {
 
     List<Marksheet> findAllBySchoolClass_Id(Long schoolClassId);
 
+    List<Marksheet> findAllBySchoolClass_School_Id(Long schoolId);
+
     List<Marksheet> findAllByTerm(Term term);
 
     List<Marksheet> findAllBySchoolSubject_Id(Long schoolSubjectId);

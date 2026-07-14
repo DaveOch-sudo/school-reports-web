@@ -35,6 +35,20 @@ public class MarksheetService {
         return marksheetRepository.findMarksheetByName(name);
     }
 
+    /**
+     * Retrieves all marksheets belonging to a specific school.
+     * Correctly queries through the school's classes.
+     *
+     * @param id the ID of the school
+     * @return a list of MarksheetDto representation
+     */
+    public List<MarksheetDto> getMarksheetsBySchoolId(Long id) {
+        return marksheetRepository.findAllBySchoolClass_School_Id(id)
+                .stream()
+                .map(MarksheetMapper::toDto)
+                .toList();
+    }
+
     @Transactional
     public Marksheet addNewMarksheet(Marksheet marksheet) {
         resolveAllGrades(marksheet);

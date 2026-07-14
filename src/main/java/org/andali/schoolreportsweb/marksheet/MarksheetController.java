@@ -21,7 +21,6 @@ import java.util.List;
 public class MarksheetController {
 
     private final MarksheetService marksheetService;
-    private final MarksheetMapper marksheetMapper;
     private final SchoolClassService schoolClassService;
     private final SchoolSubjectService schoolSubjectService;
     private final AcademicYearService academicYearService;
@@ -31,36 +30,30 @@ public class MarksheetController {
     @GetMapping
     public ResponseEntity<List<MarksheetDto>> getAll() {
         return ResponseEntity.ok(marksheetService.getAllMarksheets().stream()
-                .map(marksheetMapper::toDto).toList());
+                .map(MarksheetMapper::toDto).toList());
+    }
+    
+    @GetMapping("/school/{id}")
+    public ResponseEntity<List<MarksheetDto>> getAllBySchoolId(@PathVariable Long schoolId) {
+        return ResponseEntity.ok(marksheetService.getMarksheetsBySchoolId(schoolId));
     }
 
     @GetMapping("/class/{classId}")
     public ResponseEntity<List<MarksheetDto>> getByClass(@PathVariable Long classId) {
         return ResponseEntity.ok(marksheetService.getMarksheetsByClassId(classId)
-                .stream().map(marksheetMapper::toDto).toList());
+                .stream().map(MarksheetMapper::toDto).toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MarksheetDto> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(marksheetMapper.toDto(marksheetService.getMarksheetById(id)));
+        return ResponseEntity.ok(MarksheetMapper.toDto(marksheetService.getMarksheetById(id)));
     }
 
     @PostMapping
     public ResponseEntity<MarksheetDto> create(@RequestBody MarksheetDto dto) {
-        Marksheet m = new Marksheet();
-        m.setName(dto.getName());
-        m.setSchoolClass(schoolClassService.getSchoolClassById(dto.getSchoolClassId()));
-        m.setSchoolSubject(schoolSubjectService.getById(dto.getSchoolSubjectId()));
-        m.setAcademicYear(academicYearService.getById(dto.getAcademicYearId()));
-        m.setTerm(dto.getTerm());
-        m.setExamType(dto.getExamType());
-        m.setStatus(MarksheetStatus.DRAFT);
-        m.setCreatedAt(LocalDateTime.now());
-        m.setUpdatedAt(LocalDateTime.now());
-        if (dto.getGradingScaleOverrideId() != null)
-            m.setGradingScaleOverride(gradingScaleService.getById(dto.getGradingScaleOverrideId()));
+        marksheetService.addNewMarksheet(MarksheetMapper.toEntity(dto));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(marksheetMapper.toDto(marksheetService.addNewMarksheet(m)));
+                .body(dto);
     }
 
     /** Replace all student marks on a marksheet */
@@ -76,14 +69,14 @@ public class MarksheetController {
             m.addStudentMark(sm);
         });
         m.setUpdatedAt(LocalDateTime.now());
-        return ResponseEntity.ok(marksheetMapper.toDto(marksheetService.updateMarksheet(m)));
+        return ResponseEntity.ok(MarksheetMapper.toDto(marksheetService.updateMarksheet(m)));
     }
 
     @PatchMapping("/{id}/submit")
     public ResponseEntity<MarksheetDto> submit(@PathVariable Long id) {
         Marksheet m = marksheetService.getMarksheetById(id);
         m.setStatus(MarksheetStatus.SUBMITTED);
-        return ResponseEntity.ok(marksheetMapper.toDto(marksheetService.updateMarksheet(m)));
+        return ResponseEntity.ok(MarksheetMapper.toDto(marksheetService.updateMarksheet(m)));
     }
 
     @PatchMapping("/{id}/grade")
@@ -91,7 +84,7 @@ public class MarksheetController {
         Marksheet m = marksheetService.getMarksheetById(id);
         marksheetService.resolveAllGrades(m);
         m.setStatus(MarksheetStatus.GRADED);
-        return ResponseEntity.ok(marksheetMapper.toDto(marksheetService.updateMarksheet(m)));
+        return ResponseEntity.ok(MarksheetMapper.toDto(marksheetService.updateMarksheet(m)));
     }
 
     @DeleteMapping("/{id}")

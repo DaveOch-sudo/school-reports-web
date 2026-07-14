@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import org.andali.schoolreportsweb.enums.ExamType;
 import org.andali.schoolreportsweb.enums.MarksheetStatus;
 import org.andali.schoolreportsweb.enums.Term;
-import org.andali.schoolreportsweb.marksheet.IncompleteMarksheetException;
+import org.andali.schoolreportsweb.marksheet.exception.IncompleteMarksheetException;
 import org.andali.schoolreportsweb.marksheet.Marksheet;
 import org.andali.schoolreportsweb.marksheet.MarksheetRepository;
 import org.andali.schoolreportsweb.marksheet.StudentMark;
@@ -36,6 +36,18 @@ public class GeneralMarksheetService {
         this.schoolSubjectRepository = schoolSubjectRepository;
     }
 
+    /**
+     * Compiles and generates a GeneralMarksheet for a class, term, and exam type.
+     * This compiles individual subject marksheets into a single class-wide sheet,
+     * calculates total scores, averages, ranks students, and snapshots results
+     * to protect against future modifications.
+     *
+     * @param schoolClass the class to compile marksheets for
+     * @param term the term of the marksheet
+     * @param examType the exam type (e.g. BOT, MID, EOT)
+     * @throws IllegalStateException if a general marksheet already exists
+     * @throws IncompleteMarksheetException if not all subjects for the class are graded/submitted
+     */
     @Transactional
     public void createGeneralMarksheet(SchoolClass schoolClass, Term term, ExamType examType) {
         // check if a similar general marksheet for the same exam and class exits to avoid duplicates
@@ -113,22 +125,46 @@ public class GeneralMarksheetService {
             results.get(i).setPosition(position);
         }
 
-        // save the general marksheet
+        // Prepare class-level statistics
+        int totalStudents = results.size();
+        int totalSubjects = subjectSheets.size();
+        int classHighestTotal = results.isEmpty() ? 0 : results.get(0).getTotalMarks();
+        int classLowestTotal = results.isEmpty() ? 0 : results.get(results.size() - 1).getTotalMarks();
+        double classAverageTotal = results.stream()
+                .mapToDouble(GeneralStudentResult::getTotalMarks)
+                .average()
+                .orElse(0.0);
+
+        // Save the compiled general marksheet
         GeneralMarksheet generalMarksheet = new GeneralMarksheet();
         generalMarksheet.setSchoolClass(schoolClass);
+        generalMarksheet.setAcademicYear(subjectSheets.get(0).getAcademicYear()); // Fix: Set non-nullable AcademicYear
         generalMarksheet.setTerm(term);
         generalMarksheet.setExamType(examType);
         generalMarksheet.setGeneratedAt(LocalDateTime.now());
+        
+        // Populate class performance stats
+        generalMarksheet.setTotalStudents(totalStudents);
+        generalMarksheet.setTotalSubjects(totalSubjects);
+        generalMarksheet.setClassHighestTotal(classHighestTotal);
+        generalMarksheet.setClassLowestTotal(classLowestTotal);
+        generalMarksheet.setClassAverageTotal(classAverageTotal);
 
         results.forEach(gsr -> gsr.setGeneralMarksheet(generalMarksheet));
         generalMarksheet.setResults(results);
         generalMarksheetRepository.save(generalMarksheet);
     }
 
+    /**
+     * Fetches summaries of compiled general marksheets for landing UI pages.
+     */
     public List<GeneralMarksheetSummaryDTO> getLandingRows() {
         return generalMarksheetRepository.fetchLandingRows();
     }
 
+    /**
+     * Compiles aggregate dashboard metrics for compiled general marksheets.
+     */
     public GeneralMarksheetDashboardDTO getDashboardStats() {
         return generalMarksheetRepository.fetchDashboardStats();
     }

@@ -1,6 +1,7 @@
 package org.andali.schoolreportsweb.student;
 
-import org.andali.schoolreportsweb.student.StudentService;
+import org.andali.schoolreportsweb.student.dto.StudentRequestDto;
+import org.andali.schoolreportsweb.student.dto.StudentResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
