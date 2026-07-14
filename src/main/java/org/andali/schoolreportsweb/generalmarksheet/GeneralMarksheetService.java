@@ -10,7 +10,7 @@ import org.andali.schoolreportsweb.marksheet.MarksheetRepository;
 import org.andali.schoolreportsweb.marksheet.StudentMark;
 import org.andali.schoolreportsweb.schoolclass.SchoolClass;
 import org.andali.schoolreportsweb.student.Student;
-import org.andali.schoolreportsweb.subject.SchoolSubjectRepository;
+import org.andali.schoolreportsweb.year.AcademicYear;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,68 +20,120 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for compiling individual subject marksheets into a
+ * {@link GeneralMarksheet} — a class-wide snapshot of every student's performance
+ * across all subjects for a given term, exam type, and academic year.
+ *
+ * <p>The compilation is intentionally a one-way snapshot: once generated, the
+ * {@link GeneralMarksheet} is independent of future edits to the source marksheets.
+ * This ensures report cards remain stable after release.</p>
+ */
 @Service
 public class GeneralMarksheetService {
+
     private final GeneralMarksheetRepository generalMarksheetRepository;
     private final MarksheetRepository marksheetRepository;
-    private final SchoolSubjectRepository schoolSubjectRepository;
 
     public GeneralMarksheetService(GeneralMarksheetRepository generalMarksheetRepository,
                                    GeneralStudentResultRepository generalStudentResultRepository,
                                    SubjectResultRepository subjectResultRepository,
-                                   MarksheetRepository marksheetRepository,
-                                   SchoolSubjectRepository schoolSubjectRepository) {
+                                   MarksheetRepository marksheetRepository) {
         this.generalMarksheetRepository = generalMarksheetRepository;
         this.marksheetRepository = marksheetRepository;
-        this.schoolSubjectRepository = schoolSubjectRepository;
     }
 
+    // ── Compilation ──────────────────────────────────────────────────────────
+
     /**
-     * Compiles and generates a GeneralMarksheet for a class, term, and exam type.
-     * This compiles individual subject marksheets into a single class-wide sheet,
-     * calculates total scores, averages, ranks students, and snapshots results
-     * to protect against future modifications.
+     * Compiles and persists a {@link GeneralMarksheet} for the given class, term,
+     * exam type, and academic year.
      *
-     * @param schoolClass the class to compile marksheets for
-     * @param term the term of the marksheet
-     * @param examType the exam type (e.g. BOT, MID, EOT)
-     * @throws IllegalStateException if a general marksheet already exists
-     * @throws IncompleteMarksheetException if not all subjects for the class are graded/submitted
+     * <h3>Preconditions</h3>
+     * <ul>
+     *   <li>No general marksheet already exists for the same
+     *       (schoolClass, term, examType, academicYear) combination.</li>
+     *   <li>Every subject marksheet for the class/term/examType/year must be in
+     *       {@link MarksheetStatus#GRADED} status. Partially-graded sets are
+     *       rejected with {@link IncompleteMarksheetException}.</li>
+     * </ul>
+     *
+     * <h3>What this method does</h3>
+     * <ol>
+     *   <li>Fetches all {@code GRADED} marksheets for the combination.</li>
+     *   <li>Verifies completeness: graded count must equal total subject marksheets
+     *       for that class/term/examType (i.e. every subject has been graded).</li>
+     *   <li>Groups {@link StudentMark}s by student and builds
+     *       {@link GeneralStudentResult} objects with per-subject
+     *       {@link SubjectResult} snapshots.</li>
+     *   <li>Sorts results by total marks (descending) and assigns positions
+     *       with tie-aware ranking.</li>
+     *   <li>Computes class-level statistics (highest, lowest, average total).</li>
+     *   <li>Persists everything via {@link GeneralMarksheetRepository#save}.</li>
+     * </ol>
+     *
+     * @param schoolClass  the class to compile for
+     * @param term         the term (TERM_1, TERM_2, TERM_3)
+     * @param examType     the exam type (BOT, MID, EOT, TEST)
+     * @param academicYear the academic year scope
+     * @throws IllegalStateException        if a GeneralMarksheet already exists for this combination
+     * @throws IncompleteMarksheetException if any subject marksheet is not yet GRADED
      */
     @Transactional
-    public void createGeneralMarksheet(SchoolClass schoolClass, Term term, ExamType examType) {
-        // check if a similar general marksheet for the same exam and class exits to avoid duplicates
-        if (generalMarksheetRepository
-                .existsBySchoolClassAndTermAndExamType(schoolClass, term, examType)) {
-            throw new IllegalStateException("General marksheet already exists!");
+    public GeneralMarksheet createGeneralMarksheet(SchoolClass schoolClass,
+                                                   Term term,
+                                                   ExamType examType,
+                                                   AcademicYear academicYear) {
+
+        // ── Step 4: Duplicate check now includes academicYear ────────────────
+        // The unique constraint on GeneralMarksheet covers (school_class_id, term, examType,
+        // academic_year_id), so our guard must match that exact scope.
+        if (generalMarksheetRepository.existsBySchoolClassAndTermAndExamTypeAndAcademicYear(
+                schoolClass, term, examType, academicYear)) {
+            throw new IllegalStateException(
+                    "A general marksheet already exists for class '%s', %s %s in academic year '%s'."
+                            .formatted(schoolClass.getName(), term, examType, academicYear.getLabel()));
         }
 
-        List<Marksheet> subjectSheets = marksheetRepository
-                .findBySchoolClassAndTermAndExamTypeAndStatus(
-                        schoolClass,
-                        term,
-                        examType,
-                        MarksheetStatus.SUBMITTED // make sure only submitted marksheets are used
-                );
+        // ── Step 2a: Fetch only GRADED marksheets ────────────────────────────
+        // We deliberately require GRADED (not SUBMITTED) because grades must be
+        // resolved and persisted on StudentMark before compilation can copy them
+        // into SubjectResult snapshots.
+        List<Marksheet> gradedSheets = marksheetRepository
+                .findBySchoolClassAndTermAndExamTypeAndStatusAndAcademicYear(
+                        schoolClass, term, examType, MarksheetStatus.GRADED, academicYear);
 
-        // check if all marksheets for all class subjects have been submitted
-        long submittedCount = subjectSheets.size();
-        long expectedCount = schoolSubjectRepository.countBySchoolClass(schoolClass);
+        // ── Step 2b: Completeness check ──────────────────────────────────────
+        // Count ALL marksheets (any status) for this combination to determine
+        // how many subjects are expected. If fewer are GRADED, compilation is blocked.
+        long totalSheets = marksheetRepository
+                .countBySchoolClassAndTermAndExamTypeAndAcademicYear(
+                        schoolClass, term, examType, academicYear);
 
-        if (submittedCount < expectedCount) {
-            throw new IncompleteMarksheetException(expectedCount - submittedCount);
+        long gradedCount = gradedSheets.size();
+
+        if (gradedCount < totalSheets) {
+            long missing = totalSheets - gradedCount;
+            throw new IncompleteMarksheetException(missing);
         }
 
-        // group marks by student
+        if (gradedSheets.isEmpty()) {
+            throw new IllegalStateException(
+                    "No marksheets found for class '%s', %s %s in academic year '%s'. "
+                            .formatted(schoolClass.getName(), term, examType, academicYear.getLabel())
+                            + "Create and grade subject marksheets before compiling.");
+        }
+
+        // ── Group all StudentMarks by student across every subject ────────────
         Map<Student, List<StudentMark>> marksByStudent =
-                subjectSheets.stream()
+                gradedSheets.stream()
                         .flatMap(ms -> ms.getStudentMarks().stream())
                         .collect(Collectors.groupingBy(StudentMark::getStudent));
 
-        // build a general student result
+        // ── Build GeneralStudentResult for each student ───────────────────────
         List<GeneralStudentResult> results = new ArrayList<>();
 
-        for (var entry : marksByStudent.entrySet()) {
+        for (Map.Entry<Student, List<StudentMark>> entry : marksByStudent.entrySet()) {
             Student student = entry.getKey();
             List<StudentMark> marks = entry.getValue();
 
@@ -89,81 +141,117 @@ public class GeneralMarksheetService {
                     .mapToInt(StudentMark::getScore)
                     .sum();
 
-            double average = marks.isEmpty()
-                    ? 0.0
-                    : total / (double) marks.size();
+            double average = marks.isEmpty() ? 0.0 : total / (double) marks.size();
 
             GeneralStudentResult gsr = new GeneralStudentResult();
             gsr.setStudent(student);
             gsr.setTotalMarks(total);
             gsr.setAverageMarks(average);
 
-            List<SubjectResult> subjectResults =
-                    marks.stream().map(sm -> {
-                        SubjectResult sr = new SubjectResult();
-                        sr.setSchoolSubject(sm.getMarksheet().getSchoolSubject());
-                        sr.setScore(sm.getScore());
-                        sr.setGrade(sm.getGrade());
-                        return sr;
-                    }).toList();
-            gsr.setSubjectResults(subjectResults);
+            // ── Step 3: Populate SubjectResult snapshots ──────────────────────
+            // We snapshot subjectName at compilation time so the result remains
+            // readable even if the subject is later renamed or deleted.
+            // grade and remark are read from StudentMark where they were persisted
+            // by resolveAllGrades() — no re-resolution needed here.
+            List<SubjectResult> subjectResults = marks.stream().map(sm -> {
+                SubjectResult sr = new SubjectResult();
 
+                // Snapshot the subject name — this is the key data-integrity field
+                sr.setSubjectName(sm.getMarksheet().getSchoolSubject().getName());
+
+                // Soft reference: nullable so the snapshot survives subject deletion
+                sr.setSchoolSubject(sm.getMarksheet().getSchoolSubject());
+
+                sr.setScore(sm.getScore());
+
+                // grade/remark were persisted as real columns in Step 1 — just copy them
+                sr.setGrade(sm.getGrade());
+                sr.setRemark(sm.getRemark());
+
+                return sr;
+            }).toList();
+
+            gsr.setSubjectResults(subjectResults);
             results.add(gsr);
         }
 
-        // assign positions
-        results.sort(
-                Comparator.comparingInt(GeneralStudentResult::getTotalMarks).reversed()
-        );
+        // ── Rank students by total marks (descending) with tie-aware positions ──
+        // Tie-aware: students with the same total share a position; the next
+        // distinct total gets the position after theirs (e.g. 1, 1, 3, 4...).
+        results.sort(Comparator.comparingInt(GeneralStudentResult::getTotalMarks).reversed());
 
         int position = 1;
         for (int i = 0; i < results.size(); i++) {
-            if (i > 0 &&
-                results.get(i).getTotalMarks() < results.get(i - 1).getTotalMarks()) {
-                position++;
+            if (i > 0 && results.get(i).getTotalMarks() < results.get(i - 1).getTotalMarks()) {
+                position = i + 1; // jump to actual rank, not just increment
             }
             results.get(i).setPosition(position);
         }
 
-        // Prepare class-level statistics
-        int totalStudents = results.size();
-        int totalSubjects = subjectSheets.size();
-        int classHighestTotal = results.isEmpty() ? 0 : results.get(0).getTotalMarks();
-        int classLowestTotal = results.isEmpty() ? 0 : results.get(results.size() - 1).getTotalMarks();
-        double classAverageTotal = results.stream()
+        // ── Compute class-level performance statistics ────────────────────────
+        int totalStudents  = results.size();
+        int totalSubjects  = gradedSheets.size();
+        int classHighest   = results.isEmpty() ? 0 : results.get(0).getTotalMarks();
+        int classLowest    = results.isEmpty() ? 0 : results.get(results.size() - 1).getTotalMarks();
+        double classAverage = results.stream()
                 .mapToDouble(GeneralStudentResult::getTotalMarks)
                 .average()
                 .orElse(0.0);
 
-        // Save the compiled general marksheet
+        // ── Assemble and persist the GeneralMarksheet ─────────────────────────
         GeneralMarksheet generalMarksheet = new GeneralMarksheet();
         generalMarksheet.setSchoolClass(schoolClass);
-        generalMarksheet.setAcademicYear(subjectSheets.get(0).getAcademicYear()); // Fix: Set non-nullable AcademicYear
+        generalMarksheet.setAcademicYear(academicYear);
         generalMarksheet.setTerm(term);
         generalMarksheet.setExamType(examType);
         generalMarksheet.setGeneratedAt(LocalDateTime.now());
-        
-        // Populate class performance stats
         generalMarksheet.setTotalStudents(totalStudents);
         generalMarksheet.setTotalSubjects(totalSubjects);
-        generalMarksheet.setClassHighestTotal(classHighestTotal);
-        generalMarksheet.setClassLowestTotal(classLowestTotal);
-        generalMarksheet.setClassAverageTotal(classAverageTotal);
+        generalMarksheet.setClassHighestTotal(classHighest);
+        generalMarksheet.setClassLowestTotal(classLowest);
+        generalMarksheet.setClassAverageTotal(classAverage);
 
+        // Wire back-references before save so cascade persists child records correctly
         results.forEach(gsr -> gsr.setGeneralMarksheet(generalMarksheet));
         generalMarksheet.setResults(results);
-        generalMarksheetRepository.save(generalMarksheet);
+
+        return generalMarksheetRepository.save(generalMarksheet);
+    }
+
+    // ── Query methods ────────────────────────────────────────────────────────
+
+    /**
+     * Returns a compiled {@link GeneralMarksheet} by its ID, including all
+     * student results and subject snapshots.
+     *
+     * @param id the GeneralMarksheet ID
+     * @return the entity, or {@code null} if not found
+     */
+    public GeneralMarksheet getById(Long id) {
+        return generalMarksheetRepository.findById(id).orElse(null);
     }
 
     /**
-     * Fetches summaries of compiled general marksheets for landing UI pages.
+     * Returns all compiled general marksheets for the given class.
+     *
+     * @param schoolClass the class to query
+     * @return list of GeneralMarksheets, most recent first
+     */
+    public List<GeneralMarksheet> getBySchoolClass(SchoolClass schoolClass) {
+        return generalMarksheetRepository.findBySchoolClassOrderByGeneratedAtDesc(schoolClass);
+    }
+
+    /**
+     * Returns lightweight summary rows suitable for listing/landing UI pages.
+     * Each row contains class name, term, exam type, student count, and generation time.
      */
     public List<GeneralMarksheetSummaryDTO> getLandingRows() {
         return generalMarksheetRepository.fetchLandingRows();
     }
 
     /**
-     * Compiles aggregate dashboard metrics for compiled general marksheets.
+     * Returns aggregate dashboard metrics: total marksheets compiled,
+     * distinct classes and exam types covered, and the last generation timestamp.
      */
     public GeneralMarksheetDashboardDTO getDashboardStats() {
         return generalMarksheetRepository.fetchDashboardStats();

@@ -4,6 +4,7 @@ import org.andali.schoolreportsweb.enums.ExamType;
 import org.andali.schoolreportsweb.enums.MarksheetStatus;
 import org.andali.schoolreportsweb.enums.Term;
 import org.andali.schoolreportsweb.schoolclass.SchoolClass;
+import org.andali.schoolreportsweb.year.AcademicYear;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Repository for {@link Marksheet} persistence and querying.
+ */
 @Repository
 public interface MarksheetRepository extends JpaRepository<Marksheet, Long> {
     Marksheet findMarksheetByName(String name);
@@ -52,4 +56,27 @@ public interface MarksheetRepository extends JpaRepository<Marksheet, Long> {
     List<Marksheet> findBySchoolClassAndTermAndExamType(SchoolClass schoolClass, Term term, ExamType examType);
 
     List<Marksheet> findBySchoolClassAndTermAndExamTypeAndStatus(SchoolClass schoolClass, Term term, ExamType examType, MarksheetStatus status);
+
+    // ── Academic-year-scoped queries (used by GeneralMarksheetService) ────────
+
+    /**
+     * Returns all GRADED marksheets for the exact (class, term, examType, academicYear)
+     * combination. Used by the general marksheet compiler to collect subject snapshots.
+     */
+    List<Marksheet> findBySchoolClassAndTermAndExamTypeAndStatusAndAcademicYear(
+            SchoolClass schoolClass,
+            Term term,
+            ExamType examType,
+            MarksheetStatus status,
+            AcademicYear academicYear);
+
+    /**
+     * Counts all marksheets (any status) for the exact (class, term, examType, academicYear)
+     * combination. Used to determine how many subjects are expected before compilation.
+     */
+    long countBySchoolClassAndTermAndExamTypeAndAcademicYear(
+            SchoolClass schoolClass,
+            Term term,
+            ExamType examType,
+            AcademicYear academicYear);
 }
