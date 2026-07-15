@@ -1,9 +1,7 @@
 package org.andali.schoolreportsweb.generalmarksheet;
 
 import lombok.RequiredArgsConstructor;
-import org.andali.schoolreportsweb.generalmarksheet.dto.GeneralMarksheetMapper;
-import org.andali.schoolreportsweb.generalmarksheet.dto.GeneralMarksheetRequestDto;
-import org.andali.schoolreportsweb.generalmarksheet.dto.GeneralMarksheetResponseDto;
+import org.andali.schoolreportsweb.generalmarksheet.dto.*;
 import org.andali.schoolreportsweb.schoolclass.SchoolClass;
 import org.andali.schoolreportsweb.schoolclass.SchoolClassService;
 import org.andali.schoolreportsweb.year.AcademicYear;

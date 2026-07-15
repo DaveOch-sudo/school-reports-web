@@ -1,4 +1,4 @@
-package org.andali.schoolreportsweb.generalmarksheet;
+package org.andali.schoolreportsweb.generalmarksheet.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

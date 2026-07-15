@@ -1,7 +1,10 @@
-package org.andali.schoolreportsweb.generalmarksheet;
+package org.andali.schoolreportsweb.generalmarksheet.repositories;
 
 import org.andali.schoolreportsweb.enums.ExamType;
 import org.andali.schoolreportsweb.enums.Term;
+import org.andali.schoolreportsweb.generalmarksheet.GeneralMarksheet;
+import org.andali.schoolreportsweb.generalmarksheet.dto.GeneralMarksheetDashboardDTO;
+import org.andali.schoolreportsweb.generalmarksheet.dto.GeneralMarksheetSummaryDTO;
 import org.andali.schoolreportsweb.schoolclass.SchoolClass;
 import org.andali.schoolreportsweb.year.AcademicYear;
 import org.springframework.data.jpa.repository.JpaRepository;
