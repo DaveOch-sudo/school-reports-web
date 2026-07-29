@@ -10,4 +10,6 @@ public interface AcademicYearRepository extends JpaRepository<AcademicYear, Long
     List<AcademicYear> findAllBySchool(School school);
     Optional<AcademicYear> findBySchoolAndLabel(School school, String label);
     Optional<AcademicYear> findBySchoolAndIsCurrentTrue(School school);
+
+    AcademicYear findBySchoolIdAndIsCurrent(Long schoolId, boolean isCurrent);
 }

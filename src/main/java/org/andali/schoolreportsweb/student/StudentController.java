@@ -45,6 +45,13 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
+    @PostMapping
+    public ResponseEntity<List<StudentResponseDto>> importStudents(
+            @RequestBody List<StudentRequestDto> studentImports) {
+        studentService.addMany(studentImports);
+        return ResponseEntity.status(HttpStatus.CREATED).body(null); // no response
+    }
+
     // update student
     @PutMapping("/{id}")
     public ResponseEntity<StudentResponseDto> updateStudent(

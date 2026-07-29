@@ -1,10 +1,18 @@
 package org.andali.schoolreportsweb.student;
 
 import jakarta.transaction.Transactional;
+import org.andali.schoolreportsweb.enrollment.StudentEnrollment;
+import org.andali.schoolreportsweb.enrollment.StudentEnrollmentRepository;
+import org.andali.schoolreportsweb.enums.EnrollmentStatus;
+import org.andali.schoolreportsweb.school.SchoolRepository;
 import org.andali.schoolreportsweb.schoolclass.SchoolClass;
 import org.andali.schoolreportsweb.schoolclass.SchoolClassService;
+import org.andali.schoolreportsweb.student.dto.StudentRequestDto;
 import org.andali.schoolreportsweb.student.dto.StudentResponseDto;
+import org.andali.schoolreportsweb.year.AcademicYear;
+import org.andali.schoolreportsweb.year.AcademicYearRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,13 +22,17 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final SchoolClassService schoolClassService;
+    private final StudentEnrollmentRepository enrollmentRepository;
     private final StudentMapper studentMapper;
+    private final AcademicYearRepository academicYearRepository;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository, SchoolClassService schoolClassService, StudentMapper studentMapper) {
+    public StudentService(StudentRepository studentRepository, SchoolClassService schoolClassService, StudentEnrollmentRepository enrollmentRepository, StudentMapper studentMapper, AcademicYearRepository academicYearRepository) {
         this.studentRepository = studentRepository;
         this.schoolClassService = schoolClassService;
+        this.enrollmentRepository = enrollmentRepository;
         this.studentMapper = studentMapper;
+        this.academicYearRepository = academicYearRepository;
     }
 
     /**
@@ -40,6 +52,18 @@ public class StudentService {
                 studentDto.getDob(),
                 studentDto.getGender()
         );
+
+        // create a new student enrolment
+        StudentEnrollment studentEnrollment = new StudentEnrollment();
+        studentEnrollment.setStudent(student);
+        studentEnrollment.setStatus(EnrollmentStatus.ACTIVE);
+        studentEnrollment.setSchoolClass(schoolClassService.getSchoolClassById(studentDto.getSchoolClassId()));
+        AcademicYear academicYear = academicYearRepository.findBySchoolIdAndIsCurrent(
+                schoolClassService.getSchoolClassById(studentDto.getSchoolClassId()).getSchool().getId(),
+                true);
+        studentEnrollment.setAcademicYear(academicYear);
+        enrollmentRepository.save(studentEnrollment);
+
         studentRepository.save(student);
         System.out.println("Student added successfully");
         return student;
@@ -87,8 +111,10 @@ public class StudentService {
     /**
      * Performs a batch save of student entities.
      */
-    public void addMany(List<Student> students) {
-        studentRepository.saveAll(students);
+    public void addMany(List<StudentRequestDto> studentImports) {
+
+        studentRepository.saveAll(studentImports.stream()
+                .map(studentMapper::toEntity).toList());
     }
 
     /**
@@ -124,4 +150,5 @@ public class StudentService {
     public Student getStudentById(Long studentId) {
         return studentRepository.findById(studentId).orElse(null);
     }
+
 }

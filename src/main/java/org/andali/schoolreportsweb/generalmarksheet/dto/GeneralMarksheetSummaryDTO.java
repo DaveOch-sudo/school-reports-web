@@ -1,6 +1,7 @@
 package org.andali.schoolreportsweb.generalmarksheet.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.andali.schoolreportsweb.enums.ExamType;
@@ -9,8 +10,7 @@ import org.andali.schoolreportsweb.enums.Term;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 public class GeneralMarksheetSummaryDTO {
     private Long id;
     private String className;

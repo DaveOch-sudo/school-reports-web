@@ -3,6 +3,7 @@ package org.andali.schoolreportsweb.enrollment;
 import jakarta.persistence.*;
 import lombok.*;
 import org.andali.schoolreportsweb.enums.EnrollmentStatus;
+import org.andali.schoolreportsweb.school.School;
 import org.andali.schoolreportsweb.schoolclass.SchoolClass;
 import org.andali.schoolreportsweb.student.Student;
 import org.andali.schoolreportsweb.year.AcademicYear;
@@ -30,4 +31,7 @@ public class StudentEnrollment {
 
     @Enumerated(EnumType.STRING)
     private EnrollmentStatus status;
+
+    @ManyToOne
+    private School school;
 }
