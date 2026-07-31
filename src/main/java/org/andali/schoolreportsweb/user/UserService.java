@@ -35,7 +35,7 @@ public class UserService {
     }
 
     public List<User> getTeachers(School school) {
-        return userRepository.findAllBySchoolAndRole(school, UserRole.TEACHER);
+        return userRepository.findAllBySchoolAndRole(school, UserRole.CLASS_TEACHER);
     }
 
     public User update(User user) {

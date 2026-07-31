@@ -55,7 +55,7 @@ public interface GeneralMarksheetRepository extends JpaRepository<GeneralMarkshe
      * {@code classAverageTotal}) to avoid loading full result collections.</p>
      */
     @Query("""
-    SELECT new org.andali.schoolreportsweb.generalmarksheet.GeneralMarksheetSummaryDTO(
+    SELECT new org.andali.schoolreportsweb.generalmarksheet.dto.GeneralMarksheetSummaryDTO(
         g.id,
         g.schoolClass.name,
         g.term,
@@ -75,7 +75,7 @@ public interface GeneralMarksheetRepository extends JpaRepository<GeneralMarkshe
      * total marksheets, distinct classes covered, distinct exam types, and last generation time.
      */
     @Query("""
-    SELECT new org.andali.schoolreportsweb.generalmarksheet.GeneralMarksheetDashboardDTO(
+    SELECT new org.andali.schoolreportsweb.generalmarksheet.dto.GeneralMarksheetDashboardDTO(
         COUNT(g),
         COUNT(DISTINCT g.schoolClass.id),
         COUNT(DISTINCT g.examType),

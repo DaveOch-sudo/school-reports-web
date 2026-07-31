@@ -45,7 +45,8 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    @PostMapping
+    // intended for bulk import of students
+    @PostMapping("/bulk")
     public ResponseEntity<List<StudentResponseDto>> importStudents(
             @RequestBody List<StudentRequestDto> studentImports) {
         studentService.addMany(studentImports);
