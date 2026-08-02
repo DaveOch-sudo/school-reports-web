@@ -2,6 +2,7 @@ package org.andali.schoolreportsweb.user;
 
 import lombok.RequiredArgsConstructor;
 import org.andali.schoolreportsweb.enums.UserRole;
+import org.andali.schoolreportsweb.exception.ResourceNotFoundException;
 import org.andali.schoolreportsweb.school.School;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +23,12 @@ public class UserService {
 
     public User getById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("user not found"));
     }
 
     public User getByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("user not found"));
     }
 
     public List<User> getAllBySchool(School school) {

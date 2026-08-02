@@ -43,57 +43,57 @@ public class SecurityConfig  {
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-                .authorizeHttpRequests(auth ->
-                        auth
-                                // Login and registration
-                                .requestMatchers(
-                                    "/api/v1/auth/**"
-                                ).permitAll()
+                .authorizeHttpRequests(auth -> auth
 
-                                // PLatform management
-                                .requestMatchers(
-                                        "/api/v1/super-admin/**"
-                                )
-                                .hasRole("SUPER_ADMIN")
+                        // Public endpoints
+                        .requestMatchers(
+                                "/api/v1/auth/**"
+                        ).permitAll()
 
-                                // School administration
-                                .requestMatchers(
-                                        "api/v1/academic-years/**",
-                                        "api/v1/classes/**",
-                                        "api/v1/general-marksheets/**",
-                                        "api/v1/marksheets/**",
-                                        "api/v1/report-cards/**",
-                                        "api/v1/report-runs/**",
-                                        "api/v1/report-templates/**",
-                                        "api/v1/schools/**",
-                                        "api/v1/subjects/**",
-                                        "api/v1/students/**"
-                                ).hasAnyRole(
-                                        "SUPER_ADMIN", "SCHOOL_ADMIN"
-                                )
+                        // Platform management
+                        .requestMatchers(
+                                "/api/v1/super-admin/**"
+                        ).hasRole("SUPER_ADMIN")
 
-                                .requestMatchers(
-                                        "api/v1/marksheets/**",
-                                        "api/v1/students/**",
-                                        "api/v1/general-marksheets/**",
-                                        "api/v1/report-cards/**",
-                                        "api/v1/report-runs/**",
-                                        "api/v1/subjects/**"
+                        // Academic setup (managed by school administrators)
+                        .requestMatchers(
+                                "/api/v1/schools/**",
+                                "/api/v1/academic-years/**",
+                                "/api/v1/classes/**",
+                                "/api/v1/students/**",
+                                "/api/v1/subjects/**",
+                                "/api/v1/report-templates/**"
+                        ).hasAnyRole(
+                                "SUPER_ADMIN",
+                                "SCHOOL_ADMIN"
+                        )
 
-                                ).hasAnyRole(
-                                        "CLASS_TEACHER"
-                                )
+                        // Assessment & report management
+                        .requestMatchers(
+                                "/api/v1/marksheets/**",
+                                "/api/v1/general-marksheets/**"
+                        ).hasAnyRole(
+                                "SUPER_ADMIN",
+                                "SCHOOL_ADMIN",
+                                "CLASS_TEACHER",
+                                "SUBJECT_TEACHER"
+                        )
+                        .requestMatchers(
+                                "/api/v1/report-runs/**",
+                                "/api/v1/report-cards/**"
+                        ).hasAnyRole(
+                                "SUPER_ADMIN",
+                                "SCHOOL_ADMIN",
+                                "CLASS_TEACHER"
+                        )
 
-                                .requestMatchers(
-                                        "api/v1/marksheets/**",
-                                        "api/v1/subjects/class/**"
-                                ).hasRole(
-                                        "SUBJECT_TEACHER"
-                                )
+                        // Subject teacher specific endpoints
+                        .requestMatchers(
+                                "/api/v1/subjects/class/**"
+                        ).hasRole("SUBJECT_TEACHER")
 
-
-                                .anyRequest()
-                                .authenticated()
+                        // Everything else requires authentication
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,

@@ -1,6 +1,7 @@
 package org.andali.schoolreportsweb.schoolclass;
 
 import lombok.RequiredArgsConstructor;
+import org.andali.schoolreportsweb.exception.ResourceNotFoundException;
 import org.andali.schoolreportsweb.school.School;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class SchoolClassService {
 
     public SchoolClass getSchoolClassById(Long id) {
         return schoolClassRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Class not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Academic year not found"));
     }
 
     public SchoolClass getSchoolClassByName(String name) {

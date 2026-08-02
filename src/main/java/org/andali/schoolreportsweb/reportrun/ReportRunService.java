@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.andali.schoolreportsweb.enums.ReportRunStatus;
 import org.andali.schoolreportsweb.enums.Term;
+import org.andali.schoolreportsweb.exception.ResourceNotFoundException;
 import org.andali.schoolreportsweb.generalmarksheet.GeneralMarksheet;
 import org.andali.schoolreportsweb.reporttemplate.ReportTemplate;
 import org.andali.schoolreportsweb.reporttemplate.ReportTemplateService;
@@ -189,7 +190,7 @@ public class ReportRunService {
 
     public ReportRun getById(Long id) {
         return reportRunRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("ReportRun not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Report run not found "+id));
     }
 
     public List<ReportRun> getBySchoolClass(SchoolClass schoolClass) {

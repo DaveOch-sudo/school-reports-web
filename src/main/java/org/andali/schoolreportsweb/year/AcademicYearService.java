@@ -2,6 +2,7 @@ package org.andali.schoolreportsweb.year;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.andali.schoolreportsweb.exception.ResourceNotFoundException;
 import org.andali.schoolreportsweb.school.School;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class AcademicYearService {
 
     public AcademicYear getById(Long id) {
         return academicYearRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("AcademicYear not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Academic year not found"));
     }
 
     public List<AcademicYear> getAllBySchool(School school) {

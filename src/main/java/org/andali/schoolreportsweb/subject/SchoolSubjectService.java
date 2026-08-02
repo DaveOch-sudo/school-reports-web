@@ -1,6 +1,7 @@
 package org.andali.schoolreportsweb.subject;
 
 import lombok.RequiredArgsConstructor;
+import org.andali.schoolreportsweb.exception.ResourceNotFoundException;
 import org.andali.schoolreportsweb.schoolclass.SchoolClass;
 import org.andali.schoolreportsweb.schoolclass.SchoolClassRepository;
 import org.andali.schoolreportsweb.subject.dto.SubjectRequestDto;
@@ -37,7 +38,7 @@ public class SchoolSubjectService {
     public SubjectResponseDto getById(Long id) {
         return repository.findById(id)
                 .map(SchoolSubjectMapper::toDto)
-                .orElseThrow(() -> new IllegalArgumentException("Subject not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Academic year not found"));
     }
 
     public SubjectResponseDto save(SubjectRequestDto dto) {
