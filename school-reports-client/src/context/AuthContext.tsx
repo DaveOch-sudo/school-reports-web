@@ -8,6 +8,7 @@ interface AuthContextType {
     login: (credentials: LoginRequest) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
+    isLoading: boolean;
 }
 
 const AuthContext = createContext<
@@ -23,6 +24,7 @@ export function AuthProvider(
 
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const isAuthenticated = !!token;
 
     const login = async (
@@ -44,6 +46,7 @@ export function AuthProvider(
         localStorage.removeItem("user");
     }
 
+    // to allow detection of an already authenticated user to avoid duplicate login
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
         const storedUser = localStorage.getItem("user");
@@ -52,6 +55,9 @@ export function AuthProvider(
             setToken(storedToken);
             setUser(JSON.parse(storedUser));
         }
+
+        setIsLoading(false);
+
     }, []);
 
     return (
@@ -61,7 +67,8 @@ export function AuthProvider(
                 token,
                 login,
                 logout,
-                isAuthenticated
+                isAuthenticated,
+                isLoading
             }}
             >
             {children}
