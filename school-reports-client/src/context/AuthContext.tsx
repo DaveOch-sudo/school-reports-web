@@ -9,6 +9,8 @@ interface AuthContextType {
     logout: () => void;
     isAuthenticated: boolean;
     isLoading: boolean;
+
+    hasAnyRole: (...roles: string[]) => boolean;
 }
 
 const AuthContext = createContext<
@@ -46,6 +48,10 @@ export function AuthProvider(
         localStorage.removeItem("user");
     }
 
+    const hasAnyRole = (...roles: string[]) => {
+        return user ? roles.includes(user.role) : false;
+    };
+
     // to allow detection of an already authenticated user to avoid duplicate login
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
@@ -68,7 +74,8 @@ export function AuthProvider(
                 login,
                 logout,
                 isAuthenticated,
-                isLoading
+                isLoading,
+                hasAnyRole
             }}
             >
             {children}
