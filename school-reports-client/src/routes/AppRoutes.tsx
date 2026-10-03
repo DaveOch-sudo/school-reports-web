@@ -7,55 +7,31 @@ import StudentsPage from "../features/students/StudentsPage.tsx";
 import ClassesPage from "../features/classes/ClassesPage.tsx";
 import MarksheetsPage from "../features/marksheets/MarksheeetsPage.tsx";
 import ReportsPage from "../features/reports/ReportsPage.tsx";
+import AcademicYearsPage from "../pages/AcademicYearsPage.tsx";
 
-export default  function AppRoutes() {
-    return(
-        <Routes>
-            {/* Redirect root URL */}
-            <Route
-                path="/"
-                element={<Navigate to="/login" replace/>}
-            />
+export default function AppRoutes() {
+  return (
+    <Routes>
+      {/* Redirect root URL */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
-            {/* Public routes */}
-            <Route
-                path="/login"
-                element={<LoginPage />}
-            />
+      {/* Public routes */}
+      <Route path="/login" element={<LoginPage />} />
 
-            {/* Protected routes */}
-            <Route element={<ProtectedRoute />}>
+      {/* Protected routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/students" element={<StudentsPage />} />
 
-                <Route element={<AppLayout />}>
+          <Route path="/classes" element={<ClassesPage />} />
 
-                    <Route
-                        path="/dashboard"
-                        element={<DashboardPage />}
-                    />
-                    <Route
-                        path="/students"
-                        element={<StudentsPage />}
-                    />
+          <Route path="/marksheets" element={<MarksheetsPage />} />
 
-                    <Route
-                        path="/classes"
-                        element={<ClassesPage />}
-                    />
-
-                    <Route
-                        path="/marksheets"
-                        element={<MarksheetsPage />}
-                    />
-
-                    <Route
-                        path="/reports"
-                        element={<ReportsPage />}
-                    />
-
-                </Route>
-
-            </Route>
-
-        </Routes>
-    );
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/academic-years" element={<AcademicYearsPage />} />
+        </Route>
+      </Route>
+    </Routes>
+  );
 }

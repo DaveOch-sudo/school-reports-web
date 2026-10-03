@@ -6,7 +6,7 @@ import org.andali.schoolreportsweb.gradingscale.GradingScale;
 import org.andali.schoolreportsweb.school.School;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"school_id", "name"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "school_id", "name" }))
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

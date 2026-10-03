@@ -14,7 +14,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   info: "bg-blue-50 text-blue-700 ring-blue-200",
 };
 
-export function Badge({
+export default function Badge({
   variant = "default",
   className = "",
   children,

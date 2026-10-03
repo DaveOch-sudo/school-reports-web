@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { type FormEvent, useState } from "react";
-import { Button } from "../../components/ui/Button.tsx";
-import { Input } from "../../components/ui/Input.tsx";
+import Button from "../../components/ui/Button.tsx";
+import Input from "../../components/ui/Input.tsx";
 import { Select } from "../../components/ui/Select.tsx";
 
 export default function LoginPage() {

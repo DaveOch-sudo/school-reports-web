@@ -35,3 +35,16 @@ export interface CreateAcademicYearRequest {
   endDate?: string;
   current?: boolean;
 }
+
+export interface SchoolClass {
+  id: number;
+  name: string;
+  schoolId: number;
+  defaultGradingScaleId?: number;
+}
+
+export interface CreateSchoolClassRequest {
+  name: string;
+  schoolId: number;
+  defaultGradingScaleId?: number;
+}

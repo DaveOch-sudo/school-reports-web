@@ -48,8 +48,6 @@ export default function DashboardPage() {
       {/*Page heading */}
       <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-medium text-blue-600">School Reports</p>
-
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
             Dashboard
           </h1>
