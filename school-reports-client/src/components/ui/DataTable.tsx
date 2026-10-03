@@ -1,8 +1,9 @@
+import type { ReactNode } from "react";
 
 export interface DataTableColumn<T> {
   key: string;
   header: string;
-  render?: (row: T) => string | number;
+  render?: (row: T) => ReactNode;
   className?: string;
 }
 
